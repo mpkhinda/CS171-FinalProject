@@ -1,0 +1,6 @@
+/* * * * * * * * * * * * * *
+*           MAIN           *
+* * * * * * * * * * * * * */
+
+// init global variables
+
