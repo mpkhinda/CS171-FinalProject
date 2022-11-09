@@ -5,11 +5,11 @@
 class StreetVis {
 
     //constructor
-    constructor(parentElement, data, projection) {
+    constructor(parentElement, streetData, projection) {
         this.parentElement = parentElement;
-        this.data = data;
+        this.streetData = streetData;
         this.projection = projection;
-        this.displayData = [];
+
 
         //call initVis
         this.initVis();
@@ -30,13 +30,24 @@ class StreetVis {
             .append("g")
             .attr("transform", "translate(" + vis.margin.left + "," + vis.margin.top + ")");
 
-        // init title group
-        vis.titleGroup = vis.svg.append("g")
+        //append title
+        vis.title = vis.svg.append("text")
+            .attr("text-anchor", "middle")
+            .attr("x", vis.width/2)
+            .attr("y", vis.height/2)
             .attr("class", "intro-title")
-            .attr("transform", "translate("+vis.width/2+","+vis.height/2+")");
+            .text("Mapping Mobility in Washington, DC");
 
+        // INIT MAP FEATURES
 
-        // TODO: Init title group, init map group, set projections for map
+        // define path generator
+        vis.path = d3.geoPath().projection(vis.projection);
+
+        // init streets group
+        vis.streetsGroup = vis.svg.append("g")
+            .attr("class", "streets");
+
+        // TODO: Init map group, set projections for map
 
         vis.wrangleData();
     }
@@ -44,7 +55,10 @@ class StreetVis {
     wrangleData(){
         let vis = this;
 
-        // TODO: Filter streets (streets only, no alleys or service roads)
+        // filter streets only (no alleys or service roads)
+        vis.streetDataFiltered = vis.streetData.features.filter(function(d){
+            return d.properties.ROADTYPE === "Street";
+        });
 
 
         vis.updateVis();
@@ -53,12 +67,34 @@ class StreetVis {
     updateVis(){
         let vis = this;
 
-        //append title
-        vis.title = vis.titleGroup.append("h1")
-            .style("text-align", "center")
-            .text("Mapping Mobility in Washtington, DC");
+        // reset projection scale
+        vis.projection
+            .scale(1)
+            .translate([0, 0]);
 
-        // TODO: append title, draw streets, add animation
+        // calculate bounds, center, and scale of streets
+        var b = vis.path.bounds(vis.streetData),
+            s = .95 / Math.max((b[1][0] - b[0][0]) / vis.width, (b[1][1] - b[0][1]) / vis.height), //increase first number to increase scale
+            t = [(vis.width - s * (b[1][0] + b[0][0])) / 2, (vis.height - s * (b[1][1] + b[0][1])) / 2];
+
+        // translate and scale projection to match bounding box of streets data
+        vis.projection
+            .scale(s)
+            .translate(t);
+
+        // draw streets
+        vis.states = vis.svg.select(".streets")
+            .append("g")
+            .selectAll(".street")
+            .data(vis.streetDataFiltered)
+            .join("path")
+            .attr("d", vis.path)
+            .attr("class", "street")
+            .attr("stroke", "black")
+            .attr("fill", "none")
+            .attr("stroke-width", "0.25px");
+
+        // TODO: draw streets, add animation
 
     }
 }
