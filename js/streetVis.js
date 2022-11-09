@@ -38,6 +38,14 @@ class StreetVis {
             .attr("class", "intro-title")
             .text("Mapping Mobility in Washington, DC");
 
+        //append instructions
+        vis.title = vis.svg.append("text")
+            .attr("text-anchor", "middle")
+            .attr("x", vis.width/2)
+            .attr("y", vis.height-50)
+            .attr("class", "intro-instructions")
+            .text("Scroll to explore the data ↓");
+
         // INIT MAP FEATURES
 
         // define path generator

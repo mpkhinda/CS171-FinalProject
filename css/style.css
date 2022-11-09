@@ -9,6 +9,12 @@ body{
     fill: white;
 }
 
+.intro-instructions{
+    font-weight: 200;
+    font-size: 21px;
+    fill: white;
+}
+
 /** container styles **/
 .container-fluid{
     padding: 0px;
