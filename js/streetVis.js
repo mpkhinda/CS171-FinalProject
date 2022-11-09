@@ -106,10 +106,5 @@ class StreetVis {
             .duration(1000)
             .delay((d,i)=>i)
             .attr("opacity", 1);
-
-        // animate streets
-
-        // TODO: add animation
-
     }
 }
