@@ -47,8 +47,6 @@ class StreetVis {
         vis.streetsGroup = vis.svg.append("g")
             .attr("class", "streets");
 
-        // TODO: Init map group, set projections for map
-
         vis.wrangleData();
     }
 
@@ -74,7 +72,7 @@ class StreetVis {
 
         // calculate bounds, center, and scale of streets
         var b = vis.path.bounds(vis.streetData),
-            s = .95 / Math.max((b[1][0] - b[0][0]) / vis.width, (b[1][1] - b[0][1]) / vis.height), //increase first number to increase scale
+            s = 3 / Math.max((b[1][0] - b[0][0]) / vis.width, (b[1][1] - b[0][1]) / vis.height), //increase first number to increase scale (.95 to fit fully in frame)
             t = [(vis.width - s * (b[1][0] + b[0][0])) / 2, (vis.height - s * (b[1][1] + b[0][1])) / 2];
 
         // translate and scale projection to match bounding box of streets data
@@ -90,11 +88,20 @@ class StreetVis {
             .join("path")
             .attr("d", vis.path)
             .attr("class", "street")
-            .attr("stroke", "black")
+            .attr("stroke", "#E0E0E0")
             .attr("fill", "none")
-            .attr("stroke-width", "0.25px");
+            .attr("stroke-width", "0.35px")
 
-        // TODO: draw streets, add animation
+            // animate roads appearing
+            .attr("opacity", 0)
+            .transition()
+            .duration(1000)
+            .delay((d,i)=>i)
+            .attr("opacity", 1);
+
+        // animate streets
+
+        // TODO: add animation
 
     }
 }
