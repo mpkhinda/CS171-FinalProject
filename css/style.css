@@ -17,9 +17,25 @@ body{
 
 /** container styles **/
 .container-fluid{
-    padding: 0px;
+    padding: 0;
 }
 
 .slide{
     height: 100vh;
+}
+
+.detail-panel{
+    color: white;
+    position: absolute;
+    z-index: 5000;
+    margin: 5vh 7vh 5vh 7vh;
+    padding: 20px 30px 20px 30px;
+    height: 90vh;
+    width: 400px;
+    background-color: black;
+}
+
+/** mapbox styles **/
+.mapboxgl-ctrl-top-right{
+    margin: 20px;
 }

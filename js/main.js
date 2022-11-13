@@ -4,6 +4,7 @@
 
 // init global variables
 let myStreetVis;
+let myMapVis;
 
 // load data using promises
 let promises = [
@@ -27,6 +28,7 @@ function initMainPage(dataArray){
     console.log(dataArray); // explore dataArray in console
 
     myStreetVis = new StreetVis("street-vis", dataArray[0], d3.geoMercator());
+    myMapVis = new MapVis("map-vis", dataArray[0], MapboxToken)
 
     //use dataArray indexing to pass specific datasets from the promise to the visualization classes
 
