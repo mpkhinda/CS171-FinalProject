@@ -24,18 +24,29 @@ body{
     height: 100vh;
 }
 
-.detail-panel{
+#detail-panel{
     color: white;
     position: absolute;
     z-index: 5000;
     margin: 5vh 7vh 5vh 7vh;
     padding: 20px 30px 20px 30px;
     height: 90vh;
-    width: 400px;
+    width: 450px;
     background-color: black;
 }
 
 /** mapbox styles **/
+#map-vis {
+    position: relative;
+    z-index: 0;
+}
+
 .mapboxgl-ctrl-top-right{
     margin: 20px;
+}
+
+.selected-tract{
+    fill: darkred;
+    stroke: white;
+    stroke-width: 1.5px;
 }

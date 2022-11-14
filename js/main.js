@@ -28,7 +28,7 @@ function initMainPage(dataArray){
     console.log(dataArray); // explore dataArray in console
 
     myStreetVis = new StreetVis("street-vis", dataArray[0], d3.geoMercator());
-    myMapVis = new MapVis("map-vis", dataArray[0], MapboxToken)
+    myMapVis = new MapVis("map-vis", dataArray[1], MapboxToken)
 
     //use dataArray indexing to pass specific datasets from the promise to the visualization classes
 
