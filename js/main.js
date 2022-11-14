@@ -11,7 +11,7 @@ let promises = [
     d3.json("data/Street_Segments_2005.geojson"), // load street segments at [0]
 
     //add additional datasets below as items in this array and comment what they are
-    d3.json("data/Census_Tracts_in_2020.geojson") // census tract data for DC [1]
+    d3.json("data/DC_Health_Planning_Neighborhoods.geojson") // neighborhood data for DC [1]
 
 ];
 

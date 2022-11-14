@@ -91,7 +91,7 @@ class MapVis {
                 .join("path")
                 .attr("d", vis.path)
                 .attr("class", "tract")
-                .attr("name", d=>d.properties.NAME)
+                .attr("name", d=>d.properties.DC_HPN_NAME)
                 .attr("stroke", "white")
                 .attr("fill", "red")
                 .attr("stroke-width", "0.5px")
