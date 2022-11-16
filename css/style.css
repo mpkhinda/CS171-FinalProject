@@ -15,6 +15,19 @@ body{
     fill: white;
 }
 
+.section-title{
+    font-size: 15px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 0;
+}
+
+.big-stat{
+    font-size: 40px;
+    font-weight: bold;
+    margin-bottom: -10px;
+}
+
 /** container styles **/
 .container-fluid{
     padding: 0;
@@ -22,6 +35,14 @@ body{
 
 .slide{
     height: 100vh;
+}
+
+.table-column{
+    padding-right: 25px;
+}
+
+.divider{
+    border-top: 1px solid #454545;
 }
 
 #detail-panel{
