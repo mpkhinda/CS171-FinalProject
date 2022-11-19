@@ -11,7 +11,12 @@ let promises = [
     d3.json("data/Street_Segments_2005.geojson"), // load street segments at [0]
 
     //add additional datasets below as items in this array and comment what they are
-    d3.json("data/DC_Health_Planning_Neighborhoods.geojson") // neighborhood data for DC [1]
+    d3.json("data/DC_Health_Planning_Neighborhoods.geojson"), // neighborhood data for DC [1]
+    d3.json("data/BikeTripsEnded_by_Neighborhood.geojson"), // bike trips ended at [2]
+    d3.json("data/BikeTripsStarted_by_Neighborhood.geojson"), // bike trips started at [3]
+    d3.json("data/TaxiTripsEnded_by_Neighborhood.geojson"), // bike trips ended at [4]
+    d3.json("data/TaxiTripsStarted_by_Neighborhood.geojson") // bike trips started at [5]
+
 
 ];
 
