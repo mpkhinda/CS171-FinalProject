@@ -83,6 +83,54 @@ class MapVis {
         vis.stationGroup = vis.svg.append("g")
             .attr("class", "stations");
 
+        //init bike trip group
+        vis.bikeTripGroup = vis.svg.append("g")
+            .attr("class", "bike-trips");
+
+        //init taxi trip group
+        vis.taxiTripGroup = vis.svg.append("g")
+            .attr("class", "taxi-trips");
+
+        //draw neighborhoods
+        vis.tracts = vis.svg.select(".tracts")
+            .append("g")
+            .selectAll(".tract")
+            .data(vis.neighborhoodData.features)
+            .join("path")
+            .attr("d", vis.path)
+            .attr("class", "tract")
+            .attr("name", d=>d.properties.DC_HPN_NAME)
+            .attr("stroke", "white")
+            .attr("fill", "gray")
+            .attr("stroke-width", "0.5px")
+            .attr("opacity", .65)
+
+                //change properties on hover
+                .on("mouseenter", function(){
+                    d3.select(this).attr("stroke-width", "2px").attr("opacity", .9);
+                })
+                //reset properties on hover end
+                .on("mouseout", function(){
+                    d3.select(this).attr("stroke-width", "0.5px").attr("opacity", .65);
+                })
+                //trigger event on click and pass selected neighborhood
+                .on("click", function(){
+                    vis.eventHandler.trigger("selectionChanged", this.getAttribute("name"));
+                });
+
+        //draw stations
+        vis.stations = vis.svg.select(".stations")
+            .append("g")
+            .selectAll(".station")
+            .data(vis.bikeStationData.features)
+            .join("circle")
+            .attr("r", 2.5)
+            .attr("cx", d=>vis.pointProject(d.geometry.coordinates).x)
+            .attr("cy", d=>vis.pointProject(d.geometry.coordinates).y)
+            .attr("neighborhood", d=>d.properties.DC_HPN_NAME)
+            .attr("fill", "white")
+            .attr("stroke-width", "0.5px");
+
         //call wrangle data
         vis.wrangleData();
     }
@@ -90,6 +138,11 @@ class MapVis {
     wrangleData(){
         let vis = this;
 
+        //set up initial filtered data
+        vis.bikeStartFiltered = vis.bikeStartData.features.filter(d=>d.properties.DC_HPN_NAME === selectedNeighborhood);
+        vis.bikeEndFiltered = vis.bikeEndData.features.filter(d=>d.properties.DC_HPN_NAME === selectedNeighborhood);
+        vis.taxiStartFiltered = vis.taxiStartData.features.filter(d=>d.properties.DC_HPN_NAME === selectedNeighborhood);
+        vis.taxiEndFiltered = vis.taxiEndData.features.filter(d=>d.properties.DC_HPN_NAME === selectedNeighborhood);
 
         vis.updateVis();
     }
@@ -97,86 +150,45 @@ class MapVis {
     updateVis(){
         let vis = this;
 
-        //console.log(vis.neighborhoodData.features);
-        //console.log(vis.bikeStationData.features);
+        //draw trip lines
+        vis.bikeOutgoingTrips = vis.svg.select(".bike-trips")
+            .selectAll(".outgoing-trip")
+            .data(vis.bikeStartFiltered, d=>d.properties.ride_id)
+            .join("line")
+            .attr("class", "outgoing-trip")
+            .attr("x1", d=>vis.pointProject(d.geometry.coordinates).x)
+            .attr("y1", d=>vis.pointProject(d.geometry.coordinates).y)
+            .attr("x2", d=>vis.pointProject([d.properties.end_lng,d.properties.end_lat]).x)
+            .attr("y2", d=>vis.pointProject([d.properties.end_lng,d.properties.end_lat]).y)
+            .attr("stroke-width", "0.5px")
+            .attr("stroke", "red")
+            .attr("opacity", .5);
 
-        //draw neighborhoods
-            vis.tracts = vis.svg.select(".tracts")
-                .append("g")
-                .selectAll(".tract")
-                .data(vis.neighborhoodData.features)
-                .join("path")
-                .attr("d", vis.path)
-                .attr("class", "tract")
-                .attr("name", d=>d.properties.DC_HPN_NAME)
-                .attr("stroke", "white")
-                .attr("fill", "gray")
-                .attr("stroke-width", "0.5px")
-                .attr("opacity", .65)
-
-                //change properties on hover
-                    .on("mouseenter", function(){
-                        d3.select(this).attr("stroke-width", "2px").attr("opacity", .9);
-                    })
-                //reset properties on hover end
-                    .on("mouseout", function(){
-                        d3.select(this).attr("stroke-width", "0.5px").attr("opacity", .65);
-                    })
-                //trigger event on click and pass selected neighborhood
-                    .on("click", function(){
-                        vis.eventHandler.trigger("selectionChanged", this.getAttribute("name"));
-                    });
-
-            //draw stations
-            vis.stations = vis.svg.select(".stations")
-                .append("g")
-                .selectAll(".station")
-                .data(vis.bikeStationData.features)
-                .join("circle")
-                .attr("r", 2.5)
-                .attr("cx", d=>vis.pointProject(d.geometry.coordinates).x)
-                .attr("cy", d=>vis.pointProject(d.geometry.coordinates).y)
-                .attr("neighborhood", d=>d.properties.DC_HPN_NAME)
-                .attr("fill", function(d){
-                    if (selectedNeighborhood === d.properties.DC_HPN_NAME){
-                        return "red";
-                    } else {
-                        return "white";
-                    }
-                })
-                .attr("stroke-width", "0.5px");
-
-    }
-
-    // use only for moving with panning + zooming on basemap (do not redraw features)
-    moveVis(){
-        let vis = this;
-
-        //update tract location
-        vis.tracts.attr("d", vis.path);
-        //update station location
-        vis.stations
-            .attr("cx", d=>vis.pointProject(d.geometry.coordinates).x)
-            .attr("cy", d=>vis.pointProject(d.geometry.coordinates).y);
-
-    }
-
-    onSelectionChange(){
-        let vis = this;
-
-        //display name in panel
+        // UPDATE DETAIL PANEL
+        //display neighborhood name
         d3.select("#detail-panel")
             .select("h1")
             .text(selectedNeighborhood);
 
+        //display bike trips
+        d3.select("#incoming-bike-trips")
+            .text(vis.bikeEndFiltered.length.toString());
+
+        d3.select("#outgoing-bike-trips")
+            .text(vis.bikeStartFiltered.length.toString());
+
+        //display taxi trips
+        d3.select("#incoming-taxi-trips")
+            .text(vis.taxiEndFiltered.length.toString());
+
+        d3.select("#outgoing-taxi-trips")
+            .text(vis.taxiStartFiltered.length.toString());
+
+        // STYLE SVG OBJECTS
         //add class to selected neighborhood
         vis.tracts
             .classed("selected-tract", function(d){
-                if (selectedNeighborhood === d.properties.DC_HPN_NAME){
-                    return true;
-                } else {
-                    return false;
-                }
+                return selectedNeighborhood === d.properties.DC_HPN_NAME;
             });
 
         //update station color
@@ -190,4 +202,24 @@ class MapVis {
             });
     }
 
+    // use only for moving with panning + zooming on basemap (do not redraw features)
+    moveVis(){
+        let vis = this;
+
+        //update tract location
+        vis.tracts.attr("d", vis.path);
+
+        //update station location
+        vis.stations
+            .attr("cx", d=>vis.pointProject(d.geometry.coordinates).x)
+            .attr("cy", d=>vis.pointProject(d.geometry.coordinates).y);
+
+        //update trip lines
+        vis.bikeOutgoingTrips
+            .attr("x1", d=>vis.pointProject(d.geometry.coordinates).x)
+            .attr("y1", d=>vis.pointProject(d.geometry.coordinates).y)
+            .attr("x2", d=>vis.pointProject([d.properties.end_lng,d.properties.end_lat]).x)
+            .attr("y2", d=>vis.pointProject([d.properties.end_lng,d.properties.end_lat]).y);
+
+    }
 }

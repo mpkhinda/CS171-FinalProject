@@ -3,7 +3,7 @@
 * * * * * * * * * * * * * */
 
 // init global variables
-let selectedNeighborhood;
+let selectedNeighborhood = "CHINATOWN"; // set starting neighborhood here
 let myStreetVis;
 let myMapVis;
 
@@ -59,6 +59,6 @@ eventHandler.bind("selectionChanged", function(event){
     selectedNeighborhood = event.detail;
     //console.log(selectedNeighborhood);
     //update map vis
-    myMapVis.onSelectionChange(selectedNeighborhood);
+    myMapVis.wrangleData();
 
 });
