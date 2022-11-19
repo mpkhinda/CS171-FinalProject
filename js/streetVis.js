@@ -66,7 +66,7 @@ class StreetVis {
             return d.properties.ROADTYPE === "Street";
         });
 
-        console.log(vis.streetDataFiltered);
+        //console.log(vis.streetDataFiltered);
 
         vis.updateVis();
     }

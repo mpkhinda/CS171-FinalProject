@@ -5,9 +5,15 @@
 class MapVis {
 
     // constructor
-    constructor(parentElement, censusTractData, token) {
+    constructor(parentElement, neighborhoodData, bikeStationData, bikeEndData, bikeStartData, taxiEndData, taxiStartData, token, eventHandler) {
         this.parentElement = parentElement;
-        this.censusTractData = censusTractData;
+        this.neighborhoodData = neighborhoodData;
+        this.bikeStationData = bikeStationData;
+        this.bikeStartData = bikeStartData;
+        this.bikeEndData = bikeEndData;
+        this.taxiStartData = taxiStartData;
+        this.taxiEndData = taxiEndData;
+        this.eventHandler = eventHandler;
         this.token = token;
 
         // call initVis
@@ -55,6 +61,11 @@ class MapVis {
             this.stream.point(point.x, point.y);
         }
 
+        // update projection method for points
+        vis.pointProject = function (d) {
+            return vis.map.project(new mapboxgl.LngLat(d[0], d[1]));
+        }
+
         // create path generator
         vis.transform = d3.geoTransform({ point: vis.projection });
         vis.path = d3.geoPath().projection(vis.transform);
@@ -67,6 +78,10 @@ class MapVis {
         //init census tracts group
         vis.tractGroup = vis.svg.append("g")
             .attr("class", "tracts");
+
+        //init bike stations group
+        vis.stationGroup = vis.svg.append("g")
+            .attr("class", "stations");
 
         //call wrangle data
         vis.wrangleData();
@@ -82,36 +97,54 @@ class MapVis {
     updateVis(){
         let vis = this;
 
-        console.log(vis.censusTractData.features);
+        //console.log(vis.neighborhoodData.features);
+        //console.log(vis.bikeStationData.features);
 
+        //draw neighborhoods
             vis.tracts = vis.svg.select(".tracts")
                 .append("g")
                 .selectAll(".tract")
-                .data(vis.censusTractData.features)
+                .data(vis.neighborhoodData.features)
                 .join("path")
                 .attr("d", vis.path)
                 .attr("class", "tract")
                 .attr("name", d=>d.properties.DC_HPN_NAME)
                 .attr("stroke", "white")
-                .attr("fill", "red")
+                .attr("fill", "gray")
                 .attr("stroke-width", "0.5px")
                 .attr("opacity", .65)
-                    .on("click", function(event, d){
-                        //remove previously selected element
-                        d3.select(".selected-tract")
-                            .classed("selected-tract", false);
 
-                        //select and style new element
-                        d3.select(this)
-                            .classed("selected-tract", true);
-
-                        d3.select("#detail-panel")
-                            .select("h1")
-                            .text(this.getAttribute("name")); //display name in panel
+                //change properties on hover
+                    .on("mouseenter", function(){
+                        d3.select(this).attr("stroke-width", "2px").attr("opacity", .9);
+                    })
+                //reset properties on hover end
+                    .on("mouseout", function(){
+                        d3.select(this).attr("stroke-width", "0.5px").attr("opacity", .65);
+                    })
+                //trigger event on click and pass selected neighborhood
+                    .on("click", function(){
+                        vis.eventHandler.trigger("selectionChanged", this.getAttribute("name"));
                     });
 
-
-        //console.log("updated");
+            //draw stations
+            vis.stations = vis.svg.select(".stations")
+                .append("g")
+                .selectAll(".station")
+                .data(vis.bikeStationData.features)
+                .join("circle")
+                .attr("r", 2.5)
+                .attr("cx", d=>vis.pointProject(d.geometry.coordinates).x)
+                .attr("cy", d=>vis.pointProject(d.geometry.coordinates).y)
+                .attr("neighborhood", d=>d.properties.DC_HPN_NAME)
+                .attr("fill", function(d){
+                    if (selectedNeighborhood === d.properties.DC_HPN_NAME){
+                        return "red";
+                    } else {
+                        return "white";
+                    }
+                })
+                .attr("stroke-width", "0.5px");
 
     }
 
@@ -121,7 +154,40 @@ class MapVis {
 
         //update tract location
         vis.tracts.attr("d", vis.path);
+        //update station location
+        vis.stations
+            .attr("cx", d=>vis.pointProject(d.geometry.coordinates).x)
+            .attr("cy", d=>vis.pointProject(d.geometry.coordinates).y);
 
+    }
+
+    onSelectionChange(){
+        let vis = this;
+
+        //display name in panel
+        d3.select("#detail-panel")
+            .select("h1")
+            .text(selectedNeighborhood);
+
+        //add class to selected neighborhood
+        vis.tracts
+            .classed("selected-tract", function(d){
+                if (selectedNeighborhood === d.properties.DC_HPN_NAME){
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+
+        //update station color
+        vis.stations
+            .attr("fill", function(d){
+                if (selectedNeighborhood === d.properties.DC_HPN_NAME){
+                    return "white";
+                } else {
+                    return "darkgray";
+                }
+            });
     }
 
 }

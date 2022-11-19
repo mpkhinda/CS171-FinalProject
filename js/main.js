@@ -3,6 +3,7 @@
 * * * * * * * * * * * * * */
 
 // init global variables
+let selectedNeighborhood;
 let myStreetVis;
 let myMapVis;
 
@@ -30,13 +31,34 @@ Promise.all(promises)
         console.log(err)
     });
 
+//create event handler
+let eventHandler = {
+    bind: (eventName, handler) => {
+        document.body.addEventListener(eventName, handler);
+    },
+    trigger: (eventName, extraParameters) => {
+        document.body.dispatchEvent(new CustomEvent(eventName, {
+            detail: extraParameters
+        }));
+    }
+}
+
 // init main page
 function initMainPage(dataArray){
     console.log(dataArray); // explore dataArray in console
 
     myStreetVis = new StreetVis("street-vis", dataArray[0], d3.geoMercator());
-    myMapVis = new MapVis("map-vis", dataArray[1], MapboxToken)
+    myMapVis = new MapVis("map-vis", dataArray[1], dataArray[2], dataArray[3], dataArray[4], dataArray[5], dataArray[6], MapboxToken, eventHandler)
 
     //use dataArray indexing to pass specific datasets from the promise to the visualization classes
 
 }
+
+//bind event handler
+eventHandler.bind("selectionChanged", function(event){
+    selectedNeighborhood = event.detail;
+    //console.log(selectedNeighborhood);
+    //update map vis
+    myMapVis.onSelectionChange(selectedNeighborhood);
+
+});
