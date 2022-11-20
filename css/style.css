@@ -58,9 +58,8 @@ body{
 
 .inline-icon{
     display: flex;
-    align-items: center;
     flex-direction: row;
-    gap: 5px;
+    gap: 4px;
 }
 
 /** mapbox styles **/

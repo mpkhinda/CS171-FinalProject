@@ -80,13 +80,20 @@ class MapVis {
         vis.map.on("moveend", ()=>{vis.moveVis();});
 
         // init dots
-        vis.bikeDot = d3.select("#bike-dot").append("svg")
-            .attr("width", 10)
-            .attr("height", 10);
+        vis.radius = 4;
+        vis.incomingBikeDot = d3.select("#incoming-bike-dot").append("svg")
+            .attr("width", vis.radius*2)
+            .attr("height", vis.radius*2);
+        vis.outgoingBikeDot = d3.select("#outgoing-bike-dot").append("svg")
+            .attr("width", vis.radius*2)
+            .attr("height", vis.radius*2);
 
-        vis.taxiDot = d3.select("#taxi-dot").append("svg")
-            .attr("width", 10)
-            .attr("height", 10);
+        vis.incomingTaxiDot = d3.select("#incoming-taxi-dot").append("svg")
+            .attr("width", vis.radius*2)
+            .attr("height", vis.radius*2);
+        vis.outgoingTaxiDot = d3.select("#outgoing-taxi-dot").append("svg")
+            .attr("width", vis.radius*2)
+            .attr("height", vis.radius*2);
 
         //init tooltip
         vis.tooltip = d3.select("body").append("div")
@@ -237,8 +244,8 @@ class MapVis {
             .attr("x2", d=>vis.pointProject([d.properties.ORIGIN_BLOCK_LONGITUDE,d.properties.ORIGIN_BLOCK_LATITUDE]).x)
             .attr("y2", d=>vis.pointProject([d.properties.ORIGIN_BLOCK_LONGITUDE,d.properties.ORIGIN_BLOCK_LATITUDE]).y)
             .attr("stroke-width", "0.5px")
-            .attr("stroke", "blue")
-            .attr("opacity", .3);
+            .attr("stroke", "#01579B")
+            .attr("opacity", .35);
 
         vis.taxiOutgoingTrips = vis.svg.select(".taxi-trips")
             .selectAll(".outgoing-taxi-trip")
@@ -261,18 +268,32 @@ class MapVis {
             .text(selectedNeighborhood);
 
         //display color codes
-        vis.bikeDot
+        vis.incomingBikeDot
             .append("circle")
-            .attr("r", 5)
-            .attr("cx", 5)
-            .attr("cy", 5)
+            .attr("r", vis.radius)
+            .attr("cx", vis.radius)
+            .attr("cy", vis.radius)
+            .attr("fill", "darkred");
+
+        vis.outgoingBikeDot
+            .append("circle")
+            .attr("r", vis.radius)
+            .attr("cx", vis.radius)
+            .attr("cy", vis.radius)
             .attr("fill", "red");
 
-        vis.taxiDot
+        vis.incomingTaxiDot
             .append("circle")
-            .attr("r", 5)
-            .attr("cx", 5)
-            .attr("cy", 5)
+            .attr("r", vis.radius)
+            .attr("cx", vis.radius)
+            .attr("cy", vis.radius)
+            .attr("fill", "#01579B");
+
+        vis.outgoingTaxiDot
+            .append("circle")
+            .attr("r", vis.radius)
+            .attr("cx", vis.radius)
+            .attr("cy", vis.radius)
             .attr("fill", "lightblue");
 
         //display date range
