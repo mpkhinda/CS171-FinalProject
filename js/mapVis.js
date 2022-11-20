@@ -251,6 +251,25 @@ class MapVis {
             .select("h1")
             .text(selectedNeighborhood);
 
+        //display color codes
+        d3.select("#bike-dot").append("svg")
+            .attr("width", 10)
+            .attr("height", 10)
+            .append("circle")
+            .attr("r", 5)
+            .attr("cx", 5)
+            .attr("cy", 5)
+            .attr("fill", "red");
+
+        d3.select("#taxi-dot").append("svg")
+            .attr("width", 10)
+            .attr("height", 10)
+            .append("circle")
+            .attr("r", 5)
+            .attr("cx", 5)
+            .attr("cy", 5)
+            .attr("fill", "lightblue");
+
         //display date range
         d3.select("#date-range-start")
             .text(vis.dateFormatter(vis.dateRange[0]));

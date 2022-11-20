@@ -56,6 +56,13 @@ body{
     background-color: black;
 }
 
+.inline-icon{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 5px;
+}
+
 /** mapbox styles **/
 #map-vis {
     position: relative;
