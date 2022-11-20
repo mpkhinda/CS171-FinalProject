@@ -18,7 +18,7 @@ class MapVis {
 
         this.dateFormatter = d3.timeFormat("%B %d, %Y");
         this.bikeDateParser = d3.timeParse("%Y-%m-%d");
-        this.taxiDateParser = d3.timeParse("%d/%m/%Y");
+        this.taxiDateParser = d3.timeParse("%m/%d/%Y");
 
         // call initVis
         this.initVis();
@@ -186,7 +186,7 @@ class MapVis {
         vis.taxiStartFiltered = vis.taxiStartData.features.filter(d=>d.properties.DC_HPN_NAME === selectedNeighborhood);
         vis.taxiEndFiltered = vis.taxiEndData.features.filter(d=>d.properties.DC_HPN_NAME === selectedNeighborhood);
 
-        //get full date range (can change to filtered range if needed by changing xStartData to xStartFiltered
+        //get full date range (can change to filtered range if needed by changing xStartData to xStartFiltered)
         vis.dateRange = [
              d3.min([
                 d3.min(vis.bikeStartData.features, d=>vis.bikeDateParser(d.properties.started_at.substring(0,10))),
