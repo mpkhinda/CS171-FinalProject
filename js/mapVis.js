@@ -16,6 +16,10 @@ class MapVis {
         this.eventHandler = eventHandler;
         this.token = token;
 
+        this.dateFormatter = d3.timeFormat("%B %d, %Y");
+        this.bikeDateParser = d3.timeParse("%Y-%m-%d");
+        this.taxiDateParser = d3.timeParse("%d/%m/%Y");
+
         // call initVis
         this.initVis();
     }
@@ -79,7 +83,7 @@ class MapVis {
         vis.tooltip = d3.select("body").append("div")
             .attr("class", "map-tooltip");
 
-        //init census tracts group
+        //init neighborhood group
         vis.tractGroup = vis.svg.append("g")
             .attr("class", "tracts");
 
@@ -166,6 +170,21 @@ class MapVis {
         vis.taxiStartFiltered = vis.taxiStartData.features.filter(d=>d.properties.DC_HPN_NAME === selectedNeighborhood);
         vis.taxiEndFiltered = vis.taxiEndData.features.filter(d=>d.properties.DC_HPN_NAME === selectedNeighborhood);
 
+        //get full date range (can change to filtered range if needed by changing xStartData to xStartFiltered
+        vis.dateRange = [
+             d3.min([
+                d3.min(vis.bikeStartData.features, d=>vis.bikeDateParser(d.properties.started_at.substring(0,10))),
+                d3.min(vis.bikeEndData.features, d=>vis.bikeDateParser(d.properties.started_at.substring(0,10))),
+                d3.min(vis.taxiStartData.features, d=>vis.taxiDateParser(d.properties.ORIGINDATETIME_TR.substring(0,10))),
+                d3.min(vis.taxiEndData.features, d=>vis.taxiDateParser(d.properties.ORIGINDATETIME_TR.substring(0,10)))
+            ]),
+            d3.max([
+                d3.max(vis.bikeStartData.features, d=>vis.bikeDateParser(d.properties.ended_at.substring(0,10))),
+                d3.max(vis.bikeEndData.features, d=>vis.bikeDateParser(d.properties.ended_at.substring(0,10))),
+                d3.max(vis.taxiStartData.features, d=>vis.taxiDateParser(d.properties.DESTINATIONDATETIME_TR.substring(0,10))),
+                d3.max(vis.taxiEndData.features, d=>vis.taxiDateParser(d.properties.DESTINATIONDATETIME_TR.substring(0,10)))
+            ])];
+
         vis.updateVis();
     }
 
@@ -173,19 +192,6 @@ class MapVis {
         let vis = this;
 
         //draw trip lines
-        vis.bikeOutgoingTrips = vis.svg.select(".bike-trips")
-            .selectAll(".outgoing-trip")
-            .data(vis.bikeStartFiltered, d=>d.properties.ride_id)
-            .join("line")
-            .attr("class", "outgoing-trip")
-            .attr("x1", d=>vis.pointProject(d.geometry.coordinates).x)
-            .attr("y1", d=>vis.pointProject(d.geometry.coordinates).y)
-            .attr("x2", d=>vis.pointProject([d.properties.end_lng,d.properties.end_lat]).x)
-            .attr("y2", d=>vis.pointProject([d.properties.end_lng,d.properties.end_lat]).y)
-            .attr("stroke-width", "0.5px")
-            .attr("stroke", "red")
-            .attr("opacity", .6);
-
         vis.bikeIncomingTrips = vis.svg.select(".bike-trips")
             .selectAll(".incoming-trip")
             .data(vis.bikeEndFiltered, d=>d.properties.ride_id)
@@ -199,18 +205,18 @@ class MapVis {
             .attr("stroke", "darkred")
             .attr("opacity", .6);
 
-        vis.taxiOutgoingTrips = vis.svg.select(".taxi-trips")
-            .selectAll(".outgoing-taxi-trip")
-            .data(vis.taxiStartFiltered)
+        vis.bikeOutgoingTrips = vis.svg.select(".bike-trips")
+            .selectAll(".outgoing-trip")
+            .data(vis.bikeStartFiltered, d=>d.properties.ride_id)
             .join("line")
-            .attr("class", "outgoing-taxi-trip")
+            .attr("class", "outgoing-trip")
             .attr("x1", d=>vis.pointProject(d.geometry.coordinates).x)
             .attr("y1", d=>vis.pointProject(d.geometry.coordinates).y)
-            .attr("x2", d=>vis.pointProject([d.properties.DESTINATION_BLOCK_LONG,d.properties.DESTINATION_BLOCK_LAT]).x)
-            .attr("y2", d=>vis.pointProject([d.properties.DESTINATION_BLOCK_LONG,d.properties.DESTINATION_BLOCK_LAT]).y)
+            .attr("x2", d=>vis.pointProject([d.properties.end_lng,d.properties.end_lat]).x)
+            .attr("y2", d=>vis.pointProject([d.properties.end_lng,d.properties.end_lat]).y)
             .attr("stroke-width", "0.5px")
-            .attr("stroke", "lightblue")
-            .attr("opacity", .3);
+            .attr("stroke", "red")
+            .attr("opacity", .6);
 
         vis.taxiIncomingTrips = vis.svg.select(".taxi-trips")
             .selectAll(".incoming-taxi-trip")
@@ -225,12 +231,32 @@ class MapVis {
             .attr("stroke", "blue")
             .attr("opacity", .3);
 
+        vis.taxiOutgoingTrips = vis.svg.select(".taxi-trips")
+            .selectAll(".outgoing-taxi-trip")
+            .data(vis.taxiStartFiltered)
+            .join("line")
+            .attr("class", "outgoing-taxi-trip")
+            .attr("x1", d=>vis.pointProject(d.geometry.coordinates).x)
+            .attr("y1", d=>vis.pointProject(d.geometry.coordinates).y)
+            .attr("x2", d=>vis.pointProject([d.properties.DESTINATION_BLOCK_LONG,d.properties.DESTINATION_BLOCK_LAT]).x)
+            .attr("y2", d=>vis.pointProject([d.properties.DESTINATION_BLOCK_LONG,d.properties.DESTINATION_BLOCK_LAT]).y)
+            .attr("stroke-width", "0.5px")
+            .attr("stroke", "lightblue")
+            .attr("opacity", .3);
+
 
         // UPDATE DETAIL PANEL
         //display neighborhood name
         d3.select("#detail-panel")
             .select("h1")
             .text(selectedNeighborhood);
+
+        //display date range
+        d3.select("#date-range-start")
+            .text(vis.dateFormatter(vis.dateRange[0]));
+
+        d3.select("#date-range-end")
+            .text(vis.dateFormatter(vis.dateRange[1]));
 
         //display bike trips
         d3.select("#incoming-bike-trips")
