@@ -79,6 +79,15 @@ class MapVis {
         vis.map.on("move", ()=>{vis.moveVis();});
         vis.map.on("moveend", ()=>{vis.moveVis();});
 
+        // init dots
+        vis.bikeDot = d3.select("#bike-dot").append("svg")
+            .attr("width", 10)
+            .attr("height", 10);
+
+        vis.taxiDot = d3.select("#taxi-dot").append("svg")
+            .attr("width", 10)
+            .attr("height", 10);
+
         //init tooltip
         vis.tooltip = d3.select("body").append("div")
             .attr("class", "map-tooltip");
@@ -252,18 +261,14 @@ class MapVis {
             .text(selectedNeighborhood);
 
         //display color codes
-        d3.select("#bike-dot").append("svg")
-            .attr("width", 10)
-            .attr("height", 10)
+        vis.bikeDot
             .append("circle")
             .attr("r", 5)
             .attr("cx", 5)
             .attr("cy", 5)
             .attr("fill", "red");
 
-        d3.select("#taxi-dot").append("svg")
-            .attr("width", 10)
-            .attr("height", 10)
+        vis.taxiDot
             .append("circle")
             .attr("r", 5)
             .attr("cx", 5)
