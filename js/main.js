@@ -3,7 +3,7 @@
 * * * * * * * * * * * * * */
 
 // init global variables
-let selectedNeighborhood = "CHINATOWN"; // set starting neighborhood here
+let selectedNeighborhood = "NATIONAL MALL"; // set starting neighborhood here
 let myStreetVis;
 let myMapVis;
 

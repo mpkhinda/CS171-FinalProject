@@ -30,8 +30,8 @@ class MapVis {
         vis.map = new mapboxgl.Map({
             container: vis.parentElement, // container ID
             style: 'mapbox://styles/mapbox/dark-v9', // use dark mode map style
-            center: [-77.05, 38.9], // starting position [lng, lat]
-            zoom: 11, // starting zoom
+            center: [-77.05, 38.895], // starting position [lng, lat]
+            zoom: 11.2, // starting zoom
             projection: 'mercator'
         });
 
@@ -75,6 +75,10 @@ class MapVis {
         vis.map.on("move", ()=>{vis.moveVis();});
         vis.map.on("moveend", ()=>{vis.moveVis();});
 
+        //init tooltip
+        vis.tooltip = d3.select("body").append("div")
+            .attr("class", "map-tooltip");
+
         //init census tracts group
         vis.tractGroup = vis.svg.append("g")
             .attr("class", "tracts");
@@ -106,13 +110,31 @@ class MapVis {
             .attr("opacity", .65)
 
                 //change properties on hover
-                .on("mouseenter", function(){
-                    d3.select(this).attr("stroke-width", "2px").attr("opacity", .9);
+                .on("mouseover", function(event){
+                    d3.select(this).attr("stroke-width", "2px").attr("opacity", .9)
+
+                    //display tooltip
+                    vis.tooltip
+                        .style("opacity", 1)
+                        .style("left", event.pageX + 10 + "px")
+                        .style("top", event.pageY - 50 + "px")
+                        .html(`<div style="background: none; padding: 10px;">  
+                                 <p>${this.getAttribute("name")}</p>                         
+                             </div>`);
                 })
+
                 //reset properties on hover end
                 .on("mouseout", function(){
-                    d3.select(this).attr("stroke-width", "0.5px").attr("opacity", .65);
+                    d3.select(this).attr("stroke-width", "0.5px").attr("opacity", .65)
+
+                    //hide tooltip
+                    vis.tooltip
+                        .style("opacity", 0)
+                        .style("left", 0)
+                        .style("top", 0)
+                        .html(``);
                 })
+
                 //trigger event on click and pass selected neighborhood
                 .on("click", function(){
                     vis.eventHandler.trigger("selectionChanged", this.getAttribute("name"));
@@ -162,7 +184,47 @@ class MapVis {
             .attr("y2", d=>vis.pointProject([d.properties.end_lng,d.properties.end_lat]).y)
             .attr("stroke-width", "0.5px")
             .attr("stroke", "red")
-            .attr("opacity", .5);
+            .attr("opacity", .6);
+
+        vis.bikeIncomingTrips = vis.svg.select(".bike-trips")
+            .selectAll(".incoming-trip")
+            .data(vis.bikeEndFiltered, d=>d.properties.ride_id)
+            .join("line")
+            .attr("class", "incoming-trip")
+            .attr("x1", d=>vis.pointProject(d.geometry.coordinates).x)
+            .attr("y1", d=>vis.pointProject(d.geometry.coordinates).y)
+            .attr("x2", d=>vis.pointProject([d.properties.start_lng,d.properties.start_lat]).x)
+            .attr("y2", d=>vis.pointProject([d.properties.start_lng,d.properties.start_lat]).y)
+            .attr("stroke-width", "0.5px")
+            .attr("stroke", "darkred")
+            .attr("opacity", .6);
+
+        vis.taxiOutgoingTrips = vis.svg.select(".taxi-trips")
+            .selectAll(".outgoing-taxi-trip")
+            .data(vis.taxiStartFiltered)
+            .join("line")
+            .attr("class", "outgoing-taxi-trip")
+            .attr("x1", d=>vis.pointProject(d.geometry.coordinates).x)
+            .attr("y1", d=>vis.pointProject(d.geometry.coordinates).y)
+            .attr("x2", d=>vis.pointProject([d.properties.DESTINATION_BLOCK_LONG,d.properties.DESTINATION_BLOCK_LAT]).x)
+            .attr("y2", d=>vis.pointProject([d.properties.DESTINATION_BLOCK_LONG,d.properties.DESTINATION_BLOCK_LAT]).y)
+            .attr("stroke-width", "0.5px")
+            .attr("stroke", "lightblue")
+            .attr("opacity", .3);
+
+        vis.taxiIncomingTrips = vis.svg.select(".taxi-trips")
+            .selectAll(".incoming-taxi-trip")
+            .data(vis.taxiEndFiltered)
+            .join("line")
+            .attr("class", "incoming-taxi-trip")
+            .attr("x1", d=>vis.pointProject(d.geometry.coordinates).x)
+            .attr("y1", d=>vis.pointProject(d.geometry.coordinates).y)
+            .attr("x2", d=>vis.pointProject([d.properties.ORIGIN_BLOCK_LONGITUDE,d.properties.ORIGIN_BLOCK_LATITUDE]).x)
+            .attr("y2", d=>vis.pointProject([d.properties.ORIGIN_BLOCK_LONGITUDE,d.properties.ORIGIN_BLOCK_LATITUDE]).y)
+            .attr("stroke-width", "0.5px")
+            .attr("stroke", "blue")
+            .attr("opacity", .3);
+
 
         // UPDATE DETAIL PANEL
         //display neighborhood name
@@ -221,5 +283,22 @@ class MapVis {
             .attr("x2", d=>vis.pointProject([d.properties.end_lng,d.properties.end_lat]).x)
             .attr("y2", d=>vis.pointProject([d.properties.end_lng,d.properties.end_lat]).y);
 
+        vis.bikeIncomingTrips
+            .attr("x1", d=>vis.pointProject(d.geometry.coordinates).x)
+            .attr("y1", d=>vis.pointProject(d.geometry.coordinates).y)
+            .attr("x2", d=>vis.pointProject([d.properties.start_lng,d.properties.start_lat]).x)
+            .attr("y2", d=>vis.pointProject([d.properties.start_lng,d.properties.start_lat]).y)
+
+        vis.taxiOutgoingTrips
+            .attr("x1", d=>vis.pointProject(d.geometry.coordinates).x)
+            .attr("y1", d=>vis.pointProject(d.geometry.coordinates).y)
+            .attr("x2", d=>vis.pointProject([d.properties.DESTINATION_BLOCK_LONG,d.properties.DESTINATION_BLOCK_LAT]).x)
+            .attr("y2", d=>vis.pointProject([d.properties.DESTINATION_BLOCK_LONG,d.properties.DESTINATION_BLOCK_LAT]).y)
+
+        vis.taxiIncomingTrips
+            .attr("x1", d=>vis.pointProject(d.geometry.coordinates).x)
+            .attr("y1", d=>vis.pointProject(d.geometry.coordinates).y)
+            .attr("x2", d=>vis.pointProject([d.properties.ORIGIN_BLOCK_LONGITUDE,d.properties.ORIGIN_BLOCK_LATITUDE]).x)
+            .attr("y2", d=>vis.pointProject([d.properties.ORIGIN_BLOCK_LONGITUDE,d.properties.ORIGIN_BLOCK_LATITUDE]).y)
     }
 }
