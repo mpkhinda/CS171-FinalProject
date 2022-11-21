@@ -6,6 +6,7 @@
 let selectedNeighborhood = "NATIONAL MALL"; // set starting neighborhood here
 let myStreetVis;
 let myMapVis;
+let myRadarChart;
 
 let radarData = [
     [//Census Tract 70
