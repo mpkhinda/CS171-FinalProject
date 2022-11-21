@@ -6,6 +6,8 @@
 let selectedNeighborhood = "NATIONAL MALL"; // set starting neighborhood here
 let myStreetVis;
 let myMapVis;
+let mySankeyVis;
+//let myLinechartVis;
 
 let radarData = [
     [//Census Tract 70
@@ -75,11 +77,12 @@ let eventHandler = {
 function initMainPage(dataArray){
     console.log(dataArray); // explore dataArray in console
 
-
     myStreetVis = new StreetVis("street-vis", dataArray[0], d3.geoMercator());
     myMapVis = new MapVis("map-vis", dataArray[1], dataArray[2], dataArray[3], dataArray[4], dataArray[5], dataArray[6], MapboxToken, eventHandler)
     //Call function to draw the Radar chart
     myRadarChart = new RadarChart("radar-chart", dataArray[7]);
+    mySankeyVis = new SankeyVis("sankey-vis",dataArray[3],dataArray[4]);
+    //myLinechartVis = new LinechartVis("linechart-vis", dataArray[3],dataArray[5]);
     //use dataArray indexing to pass specific datasets from the promise to the visualization classes
 
 }
@@ -90,6 +93,6 @@ eventHandler.bind("selectionChanged", function(event){
     //console.log(selectedNeighborhood);
     //update map vis
     myMapVis.wrangleData();
-
+    mySankeyVis.wrangleData();
 
 });

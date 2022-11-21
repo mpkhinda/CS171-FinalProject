@@ -15,7 +15,7 @@ class SankeyVis
 
         // set the dimensions and margins of the graph
         vis.margin = {top: 150, right: 10, bottom: 10, left: 80};
-        vis.width = 1400 - vis.margin.left - vis.margin.right;
+        vis.width = document.getElementById(vis.parentElement).getBoundingClientRect().width - vis.margin.left - vis.margin.right-100;
         vis.height = 1200 - vis.margin.top - vis.margin.bottom;
 
         vis.padding= 50;
@@ -41,6 +41,47 @@ class SankeyVis
             .size([vis.width, vis.height]) //trigger event on click and pass selected neighborhood
 
         vis.path = vis.sankey.links();
+
+        //sankey origin and destination label
+        vis.svg.append("text")
+            .text("ORIGIN STATIONS ----> " )
+            .attr("dominant-baseline", "middle")
+            .attr("font-size", "15")
+            .attr("dy", "-1.45em")
+            .attr("font-weight", "200")
+            .style("fill", "WHITE");
+
+        //sankey origina nad destination label
+        vis.svg.append("text")
+            .text("DESTINATION STATIONS " )
+            .attr("dominant-baseline", "middle")
+            .attr("x", 1530)           // set x position of left side of text
+            //.attr("y", 150)
+            .attr("text-anchor", "end")
+            .attr("font-size", "15")
+            .attr("dy", "-1.45em")
+            .attr("font-weight", "200")
+            .style("fill", "WHITE");
+
+        //sankey title
+        vis.heading= vis.svg.append("text")
+            //.text("BIKE MOVEMENT FROM " + selectedNeighborhood+" TO OTHER STATIONS: " )
+            .text("BIKE MOVEMENT FROM SELECTED NEIGHBORHOOD TO OTHER STATIONS: " )
+            .attr("dominant-baseline", "middle")
+            .attr("font-size", "24")
+            .attr("dy", "-2.45em")
+            .attr("font-weight", "600")
+            .style("fill", "WHITE");
+
+
+        /*      vis.groupheading= vis.svg.append("g")
+                  .attr("class","text");
+
+              vis.grouplink= vis.svg.append("g")
+                  .attr("class", "link");
+
+              vis.groupnode = vis.svg.append("g")
+                  .attr("class", "node");*/
 
 
         // (Filter, aggregate, modify data)
@@ -71,6 +112,11 @@ class SankeyVis
         // filter based on selected start neighbourhood
         vis.filteredData= vis.data2.features.filter(d=> d.properties.DC_HPN_NAME === selectedNeighborhood);
         console.log(vis.filteredData); // all trips from neighbourhood
+        // CREATE ORIGIN STATIONS LIST
+        //FILTER ALL TRIPS FROM OTHER DATASET BASED ON ORIGIN STATION NAME
+        // GROUP ALL TRIPS BASED ON DESTINATION NEIGHBOURHOODS
+        // GET THE DESTINATION NEIGHBOURHOOD AND TRIP FREQUENCY FROM ARRAY NAME AND LENGTH
+
 
         //data grouped into trips
         vis.filteredData = d3.groups(vis.filteredData, d=>d.properties.start_station_name, d=>d.properties.end_station_name );
@@ -154,44 +200,26 @@ class SankeyVis
     {
 
         let vis = this;
-
-        //sankey title
-        vis.svg.append("text")
-            .text("BIKE MOVEMENT FROM " + selectedNeighborhood+" TO OTHER NEIGHBORHOODS: " )
-            .attr("dominant-baseline", "middle")
-            .attr("font-size", "24")
-            .attr("dy", "-2.45em")
-            .attr("font-weight", "600")
-            .style("fill", "WHITE");
-
-
         vis.graph = vis.sankey(vis.sankeyData);
 
+        //Remove whatever chart with the same id/class was present before
+        //d3.select(".text-sankey").select("svg").remove();
 
         // add in the links
-        vis.link= vis.svg.append("g")
-            .selectAll(".link")
-            .data(vis.graph.links);
-
-        //vis.link.exit().remove();
-
-        vis.link.enter().append("path")
-            .attr("class", "link")
+        vis.link = vis.svg.append("g").selectAll(".link")
+            .data(vis.graph.links)
+            .enter().append("path")
             .style('fill', 'lightgray')
-            .style('opacity', '0.2')
+            .style('opacity', '0.04')
             .attr("d", d3.sankeyLinkHorizontal())
             .attr("stroke-width", function(d) { return d.width; });
-        //vis.link.merge(vis.link) ----- useless
+
 
         // add the link titles
         vis.link.append("title")
             .text(function(d) {
                 return d.source.name + " → " +
                     d.target.name + "\n" + vis.format(d.value); });
-
-        vis.link.exit().remove();
-
-        //vis.link.exit().remove();
 
 
         // add in the nodes
@@ -201,37 +229,111 @@ class SankeyVis
             .enter().append("g")
             .attr("class", "node");
 
+           // .join("rect");
+
 
         // add the rectangles for the nodes
         vis.node.append("rect")
-              .attr("x", function(d) { return d.x0; })
-              .attr("y", function(d) { return d.y0; })
-              .attr("height", function(d) { return d.y1- d.y0; })
-              .attr("width", vis.sankey.nodeWidth())
-              .style("fill",function(d) {
-                  return d.color = vis.color(d.name.replace(/ .*/, "")); })
-              .style("stroke", function(d) {
-                  return d3.rgb(d.color).darker(2); })
-              .append("title")
-              .text(function(d) {
-                  return d.name + "\n" + vis.format(d.value); });
+            .attr("x", function(d) { return d.x0; })
+            .attr("y", function(d) { return d.y0; })
+            .attr("height", function(d) { return d.y1- d.y0; })
+            .attr("width", vis.sankey.nodeWidth())
+            .style("fill",function(d) {
+                return d.color = vis.color(d.name.replace(/ .*/, "")); })
+            .style("stroke", function(d) {
+                return d3.rgb(d.color).darker(2); })
+            .append("title")
+            .text(function(d) {
+                return d.name + "\n" + vis.format(d.value); });
 
 
         // add in the title for the nodes
         vis.node.append("text")
-                .attr("x", function(d) { return d.x0; })
-                .attr("y", function(d) { return (d.y1 + d.y0) / 2; })
-                .attr("dy", "0.35em") // vertically centre text regardless of font size
-                .attr("text-anchor", "end")
-                .text(function(d) { return d.name; })
-                .style("font-size", "10px")
-                .style('fill', 'white')
-                .filter(function(d) { return d.x0 < vis.width / 2; })
-                .attr("x", function(d) { return d.x1 + 6; })
-                .attr("text-anchor", "start");
+            .attr("x", function(d) { return d.x0; })
+            .attr("y", function(d) { return (d.y1 + d.y0) / 2; })
+            .attr("dy", "0.35em") // vertically centre text regardless of font size
+            .attr("text-anchor", "end")
+            .text(function(d) { return d.name; })
+            .style("font-size", "10px")
+            .style('fill', 'white')
+            .filter(function(d) { return d.x0 < vis.width / 2; })
+            .attr("x", function(d) { return d.x1 + 6; })
+            .attr("text-anchor", "start");
+
+    /*    //sankey title
+        vis.heading= vis.svg.append("text")
+            .text("BIKE MOVEMENT FROM " + selectedNeighborhood+" TO OTHER STATIONS: " )
+            .attr("dominant-baseline", "middle")
+            .attr("font-size", "24")
+            .attr("dy", "-2.45em")
+            .attr("font-weight", "600")
+            .style("fill", "WHITE");
+*/
+
+        /*
+                // add in the links
+                vis.grouplink.selectAll(".link")
+                    .data(vis.graph.links)
+                    .enter().append("path")
+                    .style('fill', 'lightgray')
+                    .style('opacity', '0.04')
+                    .attr("d", d3.sankeyLinkHorizontal())
+                    .attr("stroke-width", function(d) { return d.width; });
 
 
-        vis.svg.exit().remove();
+                // add the link titles
+                vis.grouplink.append("title")
+                    .text(function(d) {
+                        return d.source.name + " → " +
+                            d.target.name + "\n" + vis.format(d.value); });
+
+
+                // add in the nodes
+                    vis.groupnode
+                    .selectAll(".node")
+                    .data(vis.graph.nodes)
+                        .join("rect");
+
+
+                // add the rectangles for the nodes
+                vis.groupnode.attr("x", function(d) { return d.x0; })
+                      .attr("y", function(d) { return d.y0; })
+                      .attr("height", function(d) { return d.y1- d.y0; })
+                      .attr("width", vis.sankey.nodeWidth())
+                      .style("fill",function(d) {
+                          return d.color = vis.color(d.name.replace(/ .*!/, "")); })
+                      .style("stroke", function(d) {
+                          return d3.rgb(d.color).darker(2); })
+                      .append("title")
+                      .text(function(d) {
+                          return d.name + "\n" + vis.format(d.value); });
+
+
+                // add in the title for the nodes
+                vis.groupnode.append("text")
+                        .attr("x", function(d) { return d.x0; })
+                        .attr("y", function(d) { return (d.y1 + d.y0) / 2; })
+                        .attr("dy", "0.35em") // vertically centre text regardless of font size
+                        .attr("text-anchor", "end")
+                        .text(function(d) { return d.name; })
+                        .style("font-size", "10px")
+                        .style('fill', 'white')
+                        .filter(function(d) { return d.x0 < vis.width / 2; })
+                        .attr("x", function(d) { return d.x1 + 6; })
+                        .attr("text-anchor", "start");
+
+                //sankey title
+                vis.groupheading.append("text")
+                    .text("BIKE MOVEMENT FROM " + selectedNeighborhood+" TO OTHER STATIONS: " )
+                    .attr("dominant-baseline", "middle")
+                    .attr("font-size", "24")
+                    .attr("dy", "-2.45em")
+                    .attr("font-weight", "600")
+                    .style("fill", "WHITE");
+        */
+
+
+        //vis.svg.exit().remove();
 
     }
 }
@@ -239,18 +341,19 @@ class SankeyVis
 
 
 //----------------------------------------------------------------------------------------------------------------------
-/*  // the function for moving the nodes
-  function dragmove(d) {
-      d3.select(this)
-          .attr("transform",
-              "translate("
-              + d.x + ","
-              + (d.y = Math.max(
-                      0, Math.min(height - d.dy, d3.event.y))
-              ) + ")");
-      sankey.relayout();
-      link.attr("d", sankey.link() );
-  }*/
+/*        // the function for moving the nodes
+        function dragmove(d) {
+            d3.select(this)
+                .attr("transform",
+                    "translate("
+                    + d.x + ","
+                    + (d.y = Math.max(
+                            0, Math.min(vis.height - d.dy, d3.event.y))
+                    ) + ")");
+            vis.sankey.relayout();
+            vis.link.attr("d", vis.sankey.link());
+        }
+    */
 
 
 //----------------------------------------------------------------------------------------------------------------------
