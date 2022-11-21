@@ -115,6 +115,7 @@ class SankeyVis
         console.log(vis.newdata);
 
 
+
         // prepare data in form of nodes and links which are arrays of objects
         //set up graph--- empty
         vis.sankeyData = { nodes: [], links: [] };
