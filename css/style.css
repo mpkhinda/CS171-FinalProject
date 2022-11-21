@@ -98,11 +98,11 @@ body.radarChart {
     cursor: default;
 }
 
-.legend.radarChart {
+#radar-chart .legend {
     font-family: 'Raleway', sans-serif;
-    fill: #333333;
+    fill: white;
 }
 
-.tooltip.radarChart {
-    fill: #333333;
+#radarChart .tooltip {
+    fill: white;
 }
