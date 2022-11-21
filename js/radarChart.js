@@ -41,12 +41,12 @@ class RadarChart {
         vis.margin = {top: 100, right: 100, bottom: 100, left: 100};
         //vis.width = document.getElementById(vis.parentElement).getBoundingClientRect().width - vis.margin.left - vis.margin.right;
         //vis.height = document.getElementById(vis.parentElement).getBoundingClientRect().height - vis.margin.top - vis.margin.bottom;
-        vis.width = 500;
-        vis.height = 500;
+        vis.width = 400;
+        vis.height = 400;
 
 
     vis.color = d3.scaleOrdinal()
-        .range(["#EDC951","#CC333F","#00A0B0"]);
+        .range(["#A7FFEB","#1DE9B6","#E0F2F1"]);
 
     vis.options = {
             w: vis.width,
@@ -66,7 +66,7 @@ class RadarChart {
         labelFactor: 1.25, 	//How much farther than the radius of the outer circle should the labels be placed
         wrapWidth: 60, 		//The number of pixels after which a label needs to be given a new line
         opacityArea: 0.35, 	//The opacity of the area of the blob
-        dotRadius: 4, 			//The size of the colored circles of each blog
+        dotRadius: 3, 			//The size of the colored circles of each blog
         opacityCircles: 0.1, 	//The opacity of the circles of each blob
         strokeWidth: 2, 		//The width of the stroke around each blob
         roundStrokes: false,	//If true the area and stroke will follow a round path (cardinal-closed)
@@ -85,7 +85,7 @@ class RadarChart {
 
     var allAxis = (vis.data[0].map(function(i, j){return i.axis})),	//Names of each axis
         total = allAxis.length, //The number of different axes
-        radius = Math.min(vis.cfg.width/2, vis.cfg.height/2), 	//Radius of the outermost circle
+        radius = Math.min(vis.cfg.width/2.75, vis.cfg.height/2.75), 	//Radius of the outermost circle
         Format = d3.format('.0%'),			 	//Percentage formatting
         angleSlice = Math.PI * 2 / total;		//The width in radians of each "slice"
 
@@ -104,13 +104,13 @@ class RadarChart {
     //Initiate the radar chart SVG
     var svg = d3.select("#" + vis.parentElement).append("svg")
         //.attr("width",  vis.width + vis.margin.left + vis.margin.right)
-        .attr("width",  1000)
+        .attr("width",  vis.width)
         //.attr("height", vis.height + vis.margin.top + vis.margin.bottom)
-        .attr("height", 1000)
+        .attr("height", vis.height)
         .attr("class", "radar");
     //Append a g element
     var g = svg.append("g")
-        .attr("transform", "translate(500,400)");
+        .attr("transform", "translate("+ vis.width/2 +","+ vis.height/2 +")");
 
     /////////////////////////////////////////////////////////
     ////////// Glow filter for some extra pizzazz ///////////
@@ -138,9 +138,8 @@ class RadarChart {
         .attr("class", "gridCircle")
         .attr("r", function(d, i){
             return radius/vis.cfg.levels*(d);})
-        .style("fill", "#CDCDCD")
-        .style("stroke", "#CDCDCD")
-        .style("fill-opacity", vis.cfg.opacityCircles)
+        .style("fill", "none")
+        .style("stroke", "#454545")
         .style("filter" , "url(#glow)");
 
     //Text indicating at what % each level is
@@ -172,7 +171,7 @@ class RadarChart {
         .attr("x2", function(d, i){ return rScale(maxValue*1.1) * Math.cos(angleSlice*i - Math.PI/2); })
         .attr("y2", function(d, i){ return rScale(maxValue*1.1) * Math.sin(angleSlice*i - Math.PI/2); })
         .attr("class", "line")
-        .style("stroke", "white")
+        .style("stroke", "#454545")
         .style("stroke-width", "2px");
 
     //Append the labels at each axis
@@ -197,7 +196,7 @@ class RadarChart {
         .angle(function(d,i) {	return i*angleSlice; });
 
     if(vis.cfg.roundStrokes) {
-        radarLine.curve(d3.curveCardinalClosed);
+        radarLine.curve(d3.curveLinearClosed);
     }
 
     //Create a wrapper for the blobs
@@ -237,7 +236,6 @@ class RadarChart {
         .style("stroke-width", vis.cfg.strokeWidth + "px")
         .style("stroke", function(d,i) { return vis.cfg.color(i); })
         .style("fill", "none")
-        .style("filter" , "url(#glow)");
 
     //Append the circles
     blobWrapper.selectAll(".radarCircle")
