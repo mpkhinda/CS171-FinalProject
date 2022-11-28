@@ -320,17 +320,17 @@ class MapVis {
 
         //display bike trips
         d3.select("#incoming-bike-trips")
-            .text(vis.bikeEndFiltered.length.toString());
+            .text(vis.bikeEndData.features.filter(d=>d.properties.DC_HPN_NAME === selectedNeighborhood).length.toString());
 
         d3.select("#outgoing-bike-trips")
-            .text(vis.bikeStartFiltered.length.toString());
+            .text(vis.bikeStartData.features.filter(d=>d.properties.DC_HPN_NAME === selectedNeighborhood).length.toString());
 
         //display taxi trips
         d3.select("#incoming-taxi-trips")
-            .text(vis.taxiEndFiltered.length.toString());
+            .text(vis.taxiEndData.features.filter(d=>d.properties.DC_HPN_NAME === selectedNeighborhood).length.toString());
 
         d3.select("#outgoing-taxi-trips")
-            .text(vis.taxiStartFiltered.length.toString());
+            .text(vis.taxiStartData.features.filter(d=>d.properties.DC_HPN_NAME === selectedNeighborhood).length.toString());
 
         // STYLE SVG OBJECTS
         //add class to selected neighborhood
