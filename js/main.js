@@ -6,8 +6,8 @@
 let selectedNeighborhood = "NATIONAL MALL"; // set starting neighborhood here
 let myStreetVis;
 let myMapVis;
+let myRadarChart;
 let mySankeyVis;
-//let myLinechartVis;
 
 let radarData = [
     [//Census Tract 70
@@ -46,7 +46,9 @@ let promises = [
     d3.json("data/BikeTripsStarted_by_Neighborhood.geojson"), // bike trips started at [4]
     d3.json("data/TaxiTripsEnded_by_Neighborhood.geojson"), // bike trips ended at [5]
     d3.json("data/TaxiTripsStarted_by_Neighborhood.geojson"), // bike trips started at [6]
-    radarData //radarData started at [7]
+    d3.json("data/CommuteShare_by_Neighborhood.json"), // commute share started at [7]
+    //radarData will not be picked up, testing CommuteShare instead - Alex
+    radarData //radarData started at [8]
 
 
 
@@ -77,12 +79,12 @@ let eventHandler = {
 function initMainPage(dataArray){
     console.log(dataArray); // explore dataArray in console
 
+
     myStreetVis = new StreetVis("street-vis", dataArray[0], d3.geoMercator());
     myMapVis = new MapVis("map-vis", dataArray[1], dataArray[2], dataArray[3], dataArray[4], dataArray[5], dataArray[6], MapboxToken, eventHandler)
     //Call function to draw the Radar chart
-    myRadarChart = new RadarChart("radar-chart", dataArray[7]);
+    myRadarChart = new RadarChart("radar-chart", dataArray[8], dataArray[7]);
     mySankeyVis = new SankeyVis("sankey-vis",dataArray[3],dataArray[4]);
-    //myLinechartVis = new LinechartVis("linechart-vis", dataArray[3],dataArray[5]);
     //use dataArray indexing to pass specific datasets from the promise to the visualization classes
 
 }
@@ -93,6 +95,9 @@ eventHandler.bind("selectionChanged", function(event){
     //console.log(selectedNeighborhood);
     //update map vis
     myMapVis.wrangleData();
+    myRadarChart.wrangleData();
+
     mySankeyVis.wrangleData();
 
 });
+
