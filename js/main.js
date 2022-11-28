@@ -7,7 +7,8 @@ let selectedNeighborhood = "NATIONAL MALL"; // set starting neighborhood here
 let myStreetVis;
 let myMapVis;
 let myRadarChart;
-let mySankeyVis;
+let mySankeyVisOne;
+let mySankeyVisTwo;
 
 let radarData = [
     [//Census Tract 70
@@ -84,7 +85,8 @@ function initMainPage(dataArray){
     myMapVis = new MapVis("map-vis", dataArray[1], dataArray[2], dataArray[3], dataArray[4], dataArray[5], dataArray[6], MapboxToken, eventHandler)
     //Call function to draw the Radar chart
     myRadarChart = new RadarChart("radar-chart", dataArray[8], dataArray[7]);
-    mySankeyVis = new SankeyVis("sankey-vis",dataArray[3],dataArray[4]);
+    mySankeyVisOne = new SankeyVis("sankey-vis",dataArray[3],dataArray[4]);
+    mySankeyVisTwo = new SankeyVis2("sankey-vis2",dataArray[5],dataArray[6]);
     //use dataArray indexing to pass specific datasets from the promise to the visualization classes
 
 }
@@ -96,8 +98,9 @@ eventHandler.bind("selectionChanged", function(event){
     //update map vis
     myMapVis.wrangleData();
     myRadarChart.wrangleData();
-
-    mySankeyVis.wrangleData();
+    //update sankeys
+    mySankeyVisOne.wrangleData();
+    mySankeyVisTwo.wrangleData();
 
 });
 
