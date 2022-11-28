@@ -104,3 +104,6 @@ eventHandler.bind("selectionChanged", function(event){
 
 });
 
+function updateMap(){
+    myMapVis.wrangleData();
+}

@@ -34,8 +34,13 @@
 
             <div class = "row">
                 <div class = "col-6">
-
-                        <p class = "section-title">Bicycle Trips</p>
+                        <div class = "inline-icon">
+                            <p class = "section-title">Bicycle Trips</p>
+                            <label class="switch">
+                                <input id="bike-slider" onchange="updateMap()" type="checkbox" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
                     <table>
                         <tr>
                             <td class="table-column">
@@ -54,7 +59,13 @@
                     </table>
                 </div>
                 <div class = "col-6">
-                    <p class = "section-title">Taxi Trips</p>
+                    <div class = "inline-icon">
+                        <p class = "section-title">Taxi Trips</p>
+                        <label class="switch">
+                            <input id= "taxi-slider" onchange="updateMap()" type="checkbox" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
                     <table>
                         <tr>
                             <td class="table-column">

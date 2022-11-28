@@ -180,11 +180,26 @@ class MapVis {
     wrangleData(){
         let vis = this;
 
-        //set up initial filtered data
-        vis.bikeStartFiltered = vis.bikeStartData.features.filter(d=>d.properties.DC_HPN_NAME === selectedNeighborhood);
-        vis.bikeEndFiltered = vis.bikeEndData.features.filter(d=>d.properties.DC_HPN_NAME === selectedNeighborhood);
-        vis.taxiStartFiltered = vis.taxiStartData.features.filter(d=>d.properties.DC_HPN_NAME === selectedNeighborhood);
-        vis.taxiEndFiltered = vis.taxiEndData.features.filter(d=>d.properties.DC_HPN_NAME === selectedNeighborhood);
+        //get checkbox states
+        vis.bikeChecked = document.getElementById("bike-slider").checked;
+        vis.taxiChecked = document.getElementById("taxi-slider").checked;
+
+        // display only trips for categories that are checked
+        if (vis.bikeChecked === true){
+            vis.bikeStartFiltered = vis.bikeStartData.features.filter(d=>d.properties.DC_HPN_NAME === selectedNeighborhood);
+            vis.bikeEndFiltered = vis.bikeEndData.features.filter(d=>d.properties.DC_HPN_NAME === selectedNeighborhood);
+        } else {
+            vis.bikeStartFiltered = [];
+            vis.bikeEndFiltered = [];
+        }
+
+        if (vis.taxiChecked === true) {
+            vis.taxiStartFiltered = vis.taxiStartData.features.filter(d=>d.properties.DC_HPN_NAME === selectedNeighborhood);
+            vis.taxiEndFiltered = vis.taxiEndData.features.filter(d=>d.properties.DC_HPN_NAME === selectedNeighborhood);
+        } else {
+            vis.taxiStartFiltered = [];
+            vis.taxiEndFiltered = [];
+        }
 
         //get full date range (can change to filtered range if needed by changing xStartData to xStartFiltered)
         vis.dateRange = [
