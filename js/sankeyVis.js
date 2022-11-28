@@ -1,11 +1,13 @@
 class SankeyVis
 {
     // constructor to initialize SankeyChart object
-    constructor(parentElement,bikeEndData, bikeStartData)
+    constructor(parentElement,EndData, StartData) //, taxiEndData, taxiStartData
     {
         this.parentElement = parentElement;
-        this.data = bikeEndData;
-        this.data2 = bikeStartData;
+        this.data = EndData; // categorized based on destination station neighbourhood
+        this.data2 = StartData; // categorized based on source station neighbourhood
+        //this.data3 = taxiEndData;
+        //this.data4=  taxiStartData;
         this.initVis();
     }
 
@@ -14,17 +16,18 @@ class SankeyVis
         let vis = this;
 
         // set the dimensions and margins of the graph
-        vis.margin = {top: 150, right: 10, bottom: 10, left: 80};
-        vis.width = document.getElementById(vis.parentElement).getBoundingClientRect().width - vis.margin.left - vis.margin.right-100;
-        vis.height = 1200 - vis.margin.top - vis.margin.bottom;
+        vis.margin = {top: 50, right: 10, bottom: 10, left: 80};
+        //vis.width = document.getElementById(vis.parentElement).getBoundingClientRect().width + vis.margin.left + vis.margin.right-100;
+        vis.width = 300 + vis.margin.left + vis.margin.right;
+        vis.height = 100 + vis.margin.top + vis.margin.bottom;
 
-        vis.padding= 50;
+        vis.padding= 10;
 
         // format variables
         vis.formatNumber = d3.format(",.0f"); // zero decimal places
-            vis.format = function(d) { return vis.formatNumber(d); };
-            vis.color = d3.scaleOrdinal(d3.schemeCategory10);
-            //can pass on this ---keeping all source stations one color and all destination stations one color --match it with Matt's but with shade difference
+        vis.format = function(d) { return vis.formatNumber(d); };
+        vis.color = d3.scaleOrdinal(d3.schemeCategory10);
+        //can pass on this ---keeping all source stations one color and all destination stations one color --match it with Matt's but with shade difference
 
         // SVG drawing area
         vis.svg = d3.select("#" + vis.parentElement)
@@ -42,46 +45,48 @@ class SankeyVis
 
         vis.path = vis.sankey.links();
 
-        //sankey origin and destination label
-        vis.svg.append("text")
-            .text("ORIGIN STATIONS ----> " )
-            .attr("dominant-baseline", "middle")
-            .attr("font-size", "15")
-            .attr("dy", "-1.45em")
-            .attr("font-weight", "200")
-            .style("fill", "WHITE");
-
-        //sankey origina nad destination label
-        vis.svg.append("text")
-            .text("DESTINATION STATIONS " )
-            .attr("dominant-baseline", "middle")
-            .attr("x", 1530)           // set x position of left side of text
-            //.attr("y", 150)
-            .attr("text-anchor", "end")
-            .attr("font-size", "15")
-            .attr("dy", "-1.45em")
-            .attr("font-weight", "200")
-            .style("fill", "WHITE");
-
         //sankey title
         vis.heading= vis.svg.append("text")
             //.text("BIKE MOVEMENT FROM " + selectedNeighborhood+" TO OTHER STATIONS: " )
-            .text("BIKE MOVEMENT FROM SELECTED NEIGHBORHOOD TO OTHER STATIONS: " )
+            .text("BIKE MOVEMENT FROM SELECTED NEIGHBORHOOD" )
             .attr("dominant-baseline", "middle")
-            .attr("font-size", "24")
+            .attr("font-size", "16")
             .attr("dy", "-2.45em")
             .attr("font-weight", "600")
             .style("fill", "WHITE");
 
+        /*     //sankey origin and destination label
+             vis.svg.append("text")
+                 .text("ORIGIN STATIONS ----> " )
+                 .attr("dominant-baseline", "middle")
+                 .attr("font-size", "15")
+                 .attr("dy", "-1.45em")
+                 .attr("font-weight", "200")
+                 .style("fill", "WHITE");
 
-        /*      vis.groupheading= vis.svg.append("g")
-                  .attr("class","text");
+             //sankey origins nad destination label
+             vis.svg.append("text")
+                 .text("DESTINATION STATIONS " )
+                 .attr("dominant-baseline", "middle")
+                 .attr("x", 1530)           // set x position of left side of text
+                 //.attr("y", 150)
+                 .attr("text-anchor", "end")
+                 .attr("font-size", "15")
+                 .attr("dy", "-1.45em")
+                 .attr("font-weight", "200")
+                 .style("fill", "WHITE");*/
 
-              vis.grouplink= vis.svg.append("g")
-                  .attr("class", "link");
+        /*
 
-              vis.groupnode = vis.svg.append("g")
-                  .attr("class", "node");*/
+
+         /*      vis.groupheading= vis.svg.append("g")
+                   .attr("class","text");
+
+               vis.grouplink= vis.svg.append("g")
+                   .attr("class", "link");
+
+               vis.groupnode = vis.svg.append("g")
+                   .attr("class", "node");*/
 
 
         // (Filter, aggregate, modify data)
@@ -93,11 +98,9 @@ class SankeyVis
         let vis = this;
 
         //console.log(vis.data);
-        //console.log(vis.data2);
 
         //destination stations need to be grouped on the basis of their neighbourhoods, all trip values or array lengths add up
-        //source is selected station ---> target is destination station and/or neighbourhood
-        //remove any possibility of circular links
+        //source is selected neighbourhood ---> target is destination neighbourhood
         vis.source=[];
         vis.destination=[];
         vis.values=[];
@@ -107,46 +110,53 @@ class SankeyVis
         vis.n=0;
         vis.i=0;
 
-
-
         // filter based on selected start neighbourhood
         vis.filteredData= vis.data2.features.filter(d=> d.properties.DC_HPN_NAME === selectedNeighborhood);
-        console.log(vis.filteredData); // all trips from neighbourhood
+        //console.log(vis.filteredData); // all trips from neighbourhood
+
         // CREATE ORIGIN STATIONS LIST
-        //FILTER ALL TRIPS FROM OTHER DATASET BASED ON ORIGIN STATION NAME
-        // GROUP ALL TRIPS BASED ON DESTINATION NEIGHBOURHOODS
-        // GET THE DESTINATION NEIGHBOURHOOD AND TRIP FREQUENCY FROM ARRAY NAME AND LENGTH
-
-
-        //data grouped into trips
-        vis.filteredData = d3.groups(vis.filteredData, d=>d.properties.start_station_name, d=>d.properties.end_station_name );
-        console.log(vis.filteredData);
-
-        //list of all start stations, end stations and number of unique trips
+        vis.filteredData = d3.groups(vis.filteredData, d=>d.properties.start_station_name);
         vis.filteredData.forEach(function (d,i) {
             vis.source[i] = (d[0]); //names of each source stations in every loop
-            //console.log(vis.source[i]);
+            console.log(vis.source[i]); })
+        //console.log(vis.source);
 
-            vis.extract[i]=(d[1]); // array of  destination station and its trips for each source stations in every loop
-            //console.log(vis.extract[i]); // array of destination stations
+        //FILTER ALL TRIPS FROM OTHER DATASET BASED ON ORIGIN STATION NAME
+        vis.data = Object.entries(vis.data);
+        vis.data =vis.data[3][1];
+        vis.filteredData= d3.groups(vis.data, d=>d.properties.start_station_name);
+        //console.log(vis.filteredData);
 
-            vis.extract[i].forEach(function (b, j) {
-                if (b[0] !== vis.source[i] ){
-                vis.destination[j]= (b[0]); // name of destination station
-                vis.values[j]=b[1].length; // number of trips to destination station
-                //console.log(vis.destination);
-                //console.log(vis.values);
-                vis.newishdata[vis.n]= [vis.source[i],vis.destination[j], vis.values[j]];
-                j++;
-                vis.n++;
+        vis.filteredData.forEach(function (d,j) {
+            //console.log(d[0]);
+            for (vis.i = 0; vis.i < vis.source.length; vis.i++) {
+                if (d[0] === vis.source[vis.i]){
+                    vis.extract.push(d[1]);
                 }
                 else{}
-            })
-            vis.i++;
+            }
         })
-        console.log(vis.newishdata);
+        //console.log(vis.destination);
+        vis.extract = vis.extract.flat();
+
+        // GROUP ALL TRIPS BASED ON DESTINATION NEIGHBOURHOODS
+        vis.extract= d3.groups(vis.extract, d=>d.properties.DC_HPN_NAME);
+        //console.log(vis.extract);
 
 
+        // GET THE DESTINATION NEIGHBOURHOOD AND TRIP FREQUENCY FROM ARRAY NAME AND LENGTH
+        vis.extract.forEach(function (d,i) {
+            if (d[0] !== selectedNeighborhood){        //remove any possibility of circular links
+                vis.destination[i] = d[0];
+                vis.values[i] = d[1].length;
+                //console.log(vis.destination[i],vis.values[i]);
+                vis.newishdata[i]= [selectedNeighborhood,"bike",vis.destination[i], vis.values[i]];
+            }
+            else{
+                vis.i--;
+            }
+        })
+        //console.log(vis.newishdata);
 
         //source will be a property of unique start stations of object trip
         //target will be a property of unique end stations of object trip
@@ -154,11 +164,13 @@ class SankeyVis
         vis.newdata= vis.newishdata.map(function(d){
             return {
                 "source": d[0] ,
-                "target": d[1],
-                "value": d[2]
+                "target": d[2],
+                "value": d[3]
             }
         });
         console.log(vis.newdata);
+        vis.newdata.sort((a,b) => (a.value < b.value) ? 1 : ((b.value < a.value) ? -1 : 0 ))
+        vis.newdata= vis.newdata.slice(0,10);
 
 
 
@@ -209,10 +221,11 @@ class SankeyVis
         vis.link = vis.svg.append("g").selectAll(".link")
             .data(vis.graph.links)
             .enter().append("path")
-            .style('fill', 'lightgray')
-            .style('opacity', '0.04')
             .attr("d", d3.sankeyLinkHorizontal())
-            .attr("stroke-width", function(d) { return d.width; });
+            .style('fill', 'none')
+            .style('opacity', '0.2')
+            .attr("stroke", "white" )
+            .attr("stroke-width", function(d) { return d.width;} );   //function(d) { return d.width;}
 
 
         // add the link titles
@@ -229,7 +242,7 @@ class SankeyVis
             .enter().append("g")
             .attr("class", "node");
 
-           // .join("rect");
+        // .join("rect");
 
 
         // add the rectangles for the nodes
@@ -260,15 +273,15 @@ class SankeyVis
             .attr("x", function(d) { return d.x1 + 6; })
             .attr("text-anchor", "start");
 
-    /*    //sankey title
-        vis.heading= vis.svg.append("text")
-            .text("BIKE MOVEMENT FROM " + selectedNeighborhood+" TO OTHER STATIONS: " )
-            .attr("dominant-baseline", "middle")
-            .attr("font-size", "24")
-            .attr("dy", "-2.45em")
-            .attr("font-weight", "600")
-            .style("fill", "WHITE");
-*/
+        /*    //sankey title
+            vis.heading= vis.svg.append("text")
+                .text("BIKE MOVEMENT FROM " + selectedNeighborhood+" TO OTHER STATIONS: " )
+                .attr("dominant-baseline", "middle")
+                .attr("font-size", "24")
+                .attr("dy", "-2.45em")
+                .attr("font-weight", "600")
+                .style("fill", "WHITE");
+    */
 
         /*
                 // add in the links
@@ -340,21 +353,6 @@ class SankeyVis
 
 
 
-//----------------------------------------------------------------------------------------------------------------------
-/*        // the function for moving the nodes
-        function dragmove(d) {
-            d3.select(this)
-                .attr("transform",
-                    "translate("
-                    + d.x + ","
-                    + (d.y = Math.max(
-                            0, Math.min(vis.height - d.dy, d3.event.y))
-                    ) + ")");
-            vis.sankey.relayout();
-            vis.link.attr("d", vis.sankey.link());
-        }
-    */
-
 
 //----------------------------------------------------------------------------------------------------------------------
 // add a dropdown menu with all start stations list
@@ -365,51 +363,6 @@ class SankeyVis
 //vis.selectedstation= ;
 // filter based on selected bikestation
 //vis.filteredData= vis.data.features.filter(d=> d.properties.DC_HPN_NAME === vis.selectedstation);
-
-
-//----------------------------------------------------------------------------------------------------------------------
-
-
-/*
-
-            vis.data = [
-               {"source": "Fairfax Dr & N Taylor St", "target": "Ballston Metro / Stuart St & 9th St N", "value": 16},
-               {"source": "Fairfax Dr & N Taylor St", "target": "Virginia Square Metro / Monroe St & 9th St N", "value": 5},
-               {"source": "Fairfax Dr & N Taylor St", "target": "Rhodes St & 16th St N",  "value": 2},
-               {"source": "Fairfax Dr & N Taylor St", "target": "N Veitch St & 20th St N", "value": 1},
-               {"source": "Fairfax Dr & N Taylor St", "target": "Fairfax Dr & N Randolph St", "value": 2},
-               {"source": "Eads St & 12th St S", "target": "5th & K St NW", "value": 3},
-               {"source": "Eads St & 12th St S", "target": "Long Bridge Park / Long Bridge Dr & 6th St S", "value": 7},
-               {"source": "Eads St & 12th St S", "target": "Aurora Hills Cmty Ctr / 18th St & S Hayes St", "value": 13}
-               ]
-               //console.log(vis.data);*/
-
-
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/*        vis.sankeyData = {"nodes":[
-                {"node":0,"name":"Fairfax Dr & N Taylor St"},
-                {"node":1,"name":"Eads St & 12th St S"},
-                {"node":2,"name":"Ballston Metro / Stuart St & 9th St N"},
-                {"node":3,"name":"Virginia Square Metro / Monroe St & 9th St N"},
-                {"node":4,"name":"Rhodes St & 16th St N"},
-                {"node":5,"name":"N Veitch St & 20th St N"},
-                {"node":6,"name":"Fairfax Dr & N Randolph St"},
-                {"node":7,"name":"5th & K St NW"},
-                {"node":8,"name":"Long Bridge Park / Long Bridge Dr & 6th St S"},
-                {"node":9,"name":"Aurora Hills Cmty Ctr / 18th St & S Hayes St"}
-            ],
-            "links":[
-                {"source": 0, "target": 2, "value": 16},
-                {"source": 0, "target": 3, "value": 5},
-                {"source": 0, "target": 4,  "value": 2},
-                {"source": 0, "target": 5, "value": 1},
-                {"source": 0, "target": 6, "value": 2},
-                {"source": 1, "target": 7, "value": 3},
-                {"source": 1, "target": 8, "value": 7},
-                {"source": 1, "target": 9, "value": 13}
-            ]}*/
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -445,63 +398,6 @@ class SankeyVis
         })
         console.log(vis.data);*/
 
-
-//----------------------------------------------------------------------------------------------------------------------
-
-// this is a drop in replacement for d3.sankeyLinkHorizontal()
-// well, without the accessors/options
-
-
-/*     function sankeyLinkPath() {
-
-
-         console.log(vis.sankeyData.links);
-         for (vis.i = 0; vis.i < vis.sankeyData.links.length; vis.i++) {
-             vis.sx = vis.sankeyData.links[vis.i].source.x1;
-             console.log(vis.sx);
-         }
-         //vis.sx = vis.sankeyData.links[i].source.x1;
-
-           vis.tx = vis.link.target.x0 + 1
-           vis.sy0 = vis.link.y0 - vis.link.width/2
-           vis.sy1 = vis.link.y0 + vis.link.width/2
-           vis.ty0 = vis.link.y1 - vis.link.width/2
-           vis.ty1 = vis.link.y1 + vis.link.width/2
-
-           vis.halfx = (vis.tx - vis.sx)/2
-
-           vis.path = d3.path()
-           vis.path.moveTo(vis.sx, vis.sy0)
-
-           vis.cpx1 = vis.sx + vis.halfx
-           vis.cpy1 = vis.sy0 + vis.offset
-           vis.cpx2 = vis.sx + vis.halfx
-           vis.cpy2 = vis.ty0 - vis.offset
-           vis.path.bezierCurveTo(vis.cpx1, vis.cpy1, vis.cpx2, vis.cpy2, vis.tx, vis.ty0)
-           vis.path.lineTo(vis.tx, vis.ty1)
-
-           vis.cpx1 = vis.sx + vis.halfx
-           vis.cpy1 = vis.ty1 - vis.offset
-           vis.cpx2 = vis.sx + vis.halfx
-           vis.cpy2 = vis.sy1 + vis.offset
-           vis.path.bezierCurveTo(vis.cpx1, vis.cpy1, vis.cpx2, vis.cpy2, vis.sx, vis.sy1)
-           vis.path.lineTo(vis.sx, vis.sy0)
-           return vis.path.toString()
-       }*/
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/*
-          //     for (vis.i=0; vis.i<vis.sankeyData.nodes.length; vis.i++)
-          for (vis.i=1; vis.i<10; vis.i++)
-          {
-              vis.graph = vis.sankey(vis.sankeyData[vis.i]);
-          }
-
-            vis.sankeyData.nodes.forEach(function (d,i){
-            //vis.graph = vis.sankey(d[i]);
-            console.log("5");
-            } )*/
 
 
 //----------------------------------------------------------------------------------------------------------------------
