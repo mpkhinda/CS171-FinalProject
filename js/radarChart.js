@@ -126,10 +126,13 @@ class RadarChart {
         vis.data2 = vis.testData.filter(d=>d.DC_HPN_NAME === selectedNeighborhood);
         console.log("vis.data2", vis.data2);
 
+
         //Creates an array that collects filtered delivery-data's delivery IDs
         vis.dataFilteredforDisplay = [];
+        vis.dataTractsforDisplay = [];
         vis.data2.forEach((element) => {
             vis.dataFilteredforDisplay.push([
+                //test
                 {axis:"Drive Alone", value: element["Drive Alone"]},
                 {axis:"Public Transit", value: element["Public Transit"]},
                 {axis:"Walked", value: element["Walked"]},
@@ -137,8 +140,16 @@ class RadarChart {
                 {axis:"Taxicab", value: element["Taxicab"]},
                 {axis:"Worked from Home", value: element["Worked from Home"]},
             ]);
+            vis.dataTractsforDisplay.push(" " + element["NAME"])
+
         });
         console.log("vis.data3", vis.dataFilteredforDisplay);
+
+        // UPDATE DETAIL PANEL
+        //display neighborhood name
+        d3.select("#census-tract-names")
+            .select("p")
+            .text(vis.dataTractsforDisplay);
 
         //Remove whatever chart with the same id/class was present before
        // d3.select("#" + vis.parentElement).select("svg").remove();
@@ -305,22 +316,23 @@ class RadarChart {
         .attr("cy", function(d,i){ return rScale(d.value) * Math.sin(angleSlice*i - Math.PI/2); })
         .style("fill", "none")
         .style("pointer-events", "all")
-        .on("mouseover", function(d,i) {
+        .on("mouseover", function(event,d) {
              vis.newX =  parseFloat(d3.select(this).attr('cx')) - 10;
              vis.newY =  parseFloat(d3.select(this).attr('cy')) - 10;
-
-            console.log(i);
-
-            tooltip
+            console.log(d);
+            vis.tooltip
                 .attr('x', vis.newX)
                 .attr('y', vis.newY)
-                .text(Format(i.value))
+                .text(
+                    d.axis + " : " + Format(d.value) +
+                    "cheese"
+                )
                 .transition().duration(200)
                 .style('opacity', 1)
                 .style("fill",'white');
         })
         .on("mouseout", function(){
-            tooltip.transition().duration(200)
+            vis.tooltip.transition().duration(200)
                 .style("opacity", 0);
         });
 
