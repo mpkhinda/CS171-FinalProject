@@ -144,7 +144,8 @@ class RadarChart {
        // d3.select("#" + vis.parentElement).select("svg").remove();
 
         //If the supplied maxValue is smaller than the actual one, replace by the max in the data
-    var maxValue = Math.max(vis.cfg.maxValue, d3.max(vis.dataFilteredforDisplay, function(i){return d3.max(i.map(function(o){return o.value;}))}));
+    //var maxValue = Math.max(vis.cfg.maxValue, d3.max(vis.dataFilteredforDisplay, function(i){return d3.max(i.map(function(o){return o.value;}))}));
+    var maxValue = 1;
 
     var allAxis = (vis.dataFilteredforDisplay[0].map(function(i, j){return i.axis})),	//Names of each axis
         total = allAxis.length, //The number of different axes
@@ -166,7 +167,7 @@ class RadarChart {
 
 
     //Draw the background circles
-    vis.axisGrid.selectAll(".levels")
+    vis.axisGrid.selectAll(".gridCircle")
         .data(d3.range(1,(vis.cfg.levels+1)).reverse())
         .join("circle")
         .attr("class", "gridCircle")
@@ -239,8 +240,9 @@ class RadarChart {
         .attr("class", "radarWrapper");
 
     //Append the backgrounds
-    vis.blobWrapper
-        .append("path")
+    vis.blobWrapper.selectAll(".radarArea")
+        .data(vis.dataFilteredforDisplay)
+        .join("path")
         .attr("class", "radarArea")
         .attr("d", function(d,i) { return vis.radarLine(d); })
         .style("fill", function(d,i) { return vis.cfg.color(i); })
@@ -263,7 +265,9 @@ class RadarChart {
         });
 
     //Create the outlines
-    vis.blobWrapper.append("path")
+    vis.blobWrapper.selectAll(".radarStroke")
+        .data(vis.dataFilteredforDisplay)
+        .join("path")
         .attr("class", "radarStroke")
         .attr("d", function(d,i) { return vis.radarLine(d); })
         .style("stroke-width", vis.cfg.strokeWidth + "px")
