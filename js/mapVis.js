@@ -70,6 +70,11 @@ class MapVis {
             return vis.map.project(new mapboxgl.LngLat(d[0], d[1]));
         }
 
+        //unproject function
+        vis.unproject = function(d) {
+            return vis.map.unproject(d);
+        }
+
         // create path generator
         vis.transform = d3.geoTransform({ point: vis.projection });
         vis.path = d3.geoPath().projection(vis.transform);
@@ -158,6 +163,15 @@ class MapVis {
                 //trigger event on click and pass selected neighborhood
                 .on("click", function(){
                     vis.eventHandler.trigger("selectionChanged", this.getAttribute("name"));
+
+                    let buffer = 50;
+                    let nePoint = [((this.getBBox().x) + (this.getBBox().width) + buffer),(this.getBBox().y - buffer)];
+                    let swPoint = [(this.getBBox().x - buffer),((this.getBBox().y) + (this.getBBox().height) + buffer)];
+
+                    vis.map.fitBounds([
+                        vis.unproject(swPoint), // southwestern corner of the bounds
+                        vis.unproject(nePoint) // northeastern corner of the bounds
+                    ]);
                 });
 
         //draw stations
