@@ -40,7 +40,7 @@ class MapVis {
         });
 
         // disable map zoom if needed
-        vis.map.scrollZoom.disable();
+        //vis.map.scrollZoom.disable();
 
         // Add zoom and rotation controls to the map.
         vis.map.addControl(new mapboxgl.NavigationControl());
