@@ -80,7 +80,16 @@ class RadarChart {
             opacityCircles: 0.1, 	//The opacity of the circles of each blob
             strokeWidth: 2, 		//The width of the stroke around each blob
             roundStrokes: false,	//If true the area and stroke will follow a round path (cardinal-closed)
-            color: d3.scaleOrdinal(d3.schemeCategory10)	//Color function
+            color: d3.scaleOrdinal().range(["#E0F2F1",
+                "#B2DFDB",
+                "#80CBC4",
+                "#4DB6AC",
+                "#26A69A",
+                "#009688",
+                "#00897B",
+                "#00796B",
+                "#00695C",
+                "#004D40"])	//Color function
         };
 
         //Put all of the options into a variable called vis.cfg
@@ -230,6 +239,7 @@ class RadarChart {
 
     //Append the labels at each axis
     vis.axis.append("text")
+        .join("text")
         .attr("class", "legend")
         .style("font-size", "11px")
         .attr("text-anchor", "middle")
@@ -302,7 +312,8 @@ class RadarChart {
         .attr("r", vis.cfg.dotRadius)
         .attr("cx", function(d,i){ return rScale(d.value) * Math.cos(angleSlice*i - Math.PI/2); })
         .attr("cy", function(d,i){ return rScale(d.value) * Math.sin(angleSlice*i - Math.PI/2); })
-        .style("fill", function(d,i,j) { return vis.cfg.color(j); })
+        .style("fill", function(d,i,j) { console.log(j,vis.cfg.color(j));return vis.cfg.color(j);
+        })
         .style("fill-opacity", 0.8);
 
     /////////////////////////////////////////////////////////
@@ -333,8 +344,7 @@ class RadarChart {
                 .attr('x', vis.newX)
                 .attr('y', vis.newY)
                 .text(
-                    d.axis + " : " + Format(d.value) +
-                    "cheese"
+                    d.axis + " : " + Format(d.value)
                 )
                 .transition().duration(200)
                 .style('opacity', 1)
