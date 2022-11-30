@@ -274,7 +274,7 @@ class MapVis {
             .attr("y2", d=>vis.pointProject([d.properties.ORIGIN_BLOCK_LONGITUDE,d.properties.ORIGIN_BLOCK_LATITUDE]).y)
             .attr("stroke-width", "0.5px")
             .attr("stroke", "#01579B")
-            .attr("opacity", .35);
+            .attr("opacity", .6);
 
         vis.taxiOutgoingTrips = vis.svg.select(".taxi-trips")
             .selectAll(".outgoing-taxi-trip")
@@ -287,7 +287,7 @@ class MapVis {
             .attr("y2", d=>vis.pointProject([d.properties.DESTINATION_BLOCK_LONG,d.properties.DESTINATION_BLOCK_LAT]).y)
             .attr("stroke-width", "0.5px")
             .attr("stroke", "lightblue")
-            .attr("opacity", .3);
+            .attr("opacity", .6);
 
 
         // UPDATE DETAIL PANEL
