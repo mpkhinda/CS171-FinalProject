@@ -1,5 +1,6 @@
 body{
     background-color: #121212;
+    color: white;
 }
 
 /** text styles **/
@@ -28,6 +29,25 @@ body{
     margin-bottom: -10px;
 }
 
+.overview-header{
+    font-size: 3.5vw;
+    font-weight: 100;
+    text-align: center;
+    width: 100vw;
+    margin: 20px 0 50px;
+}
+
+.info-title{
+    text-align: center;
+    font-weight: 700;
+}
+
+.scroll-text{
+    text-align: center;
+    font-weight: 200;
+    font-size: 21px;
+}
+
 /** container styles **/
 .container-fluid{
     padding: 0;
@@ -35,6 +55,10 @@ body{
 
 .slide{
     height: 100vh;
+}
+
+#overview-section{
+    padding: 2vw;
 }
 
 .table-column{
