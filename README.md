@@ -45,5 +45,4 @@ _____
  Additional Acknowledgements:
 - Much of the d3 and Mapbox integration was gleaned from examples by [Frank Schlosser](https://franksh.com/posts/d3-mapboxgl/) and [John Alexis Guerra Gómez](https://observablehq.com/@john-guerra/mapbox-d3).
 - The radar chart was based on code from [Nadieh Bremer](https://gist.github.com/nbremer/21746a9668ffdf6d8242).
-- The sankey diagram was based on code from ...
 
