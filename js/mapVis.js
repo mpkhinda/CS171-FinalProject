@@ -72,7 +72,7 @@ class MapVis {
 
         //unproject function
         vis.unproject = function(d) {
-            return vis.map.unproject(d);
+            return vis.map.unproject(d); //returns lon lat values based on screen pixel values
         }
 
         // create path generator
@@ -84,7 +84,7 @@ class MapVis {
         vis.map.on("move", ()=>{vis.moveVis();});
         vis.map.on("moveend", ()=>{vis.moveVis();});
 
-        // init dots
+        // init legend dots
         vis.radius = 4;
         vis.incomingBikeDot = d3.select("#incoming-bike-dot").append("svg")
             .attr("width", vis.radius*2)
@@ -169,12 +169,12 @@ class MapVis {
                     let swPoint = [(this.getBBox().x - buffer),((this.getBBox().y) + (this.getBBox().height) + buffer)];
 
                     vis.map.fitBounds([
-                        vis.unproject(swPoint), // southwestern corner of the bounds
-                        vis.unproject(nePoint) // northeastern corner of the bounds
+                        vis.unproject(swPoint), // southwestern corner of the zoom bounds
+                        vis.unproject(nePoint) // northeastern corner of the zoom bounds
                     ]);
                 });
 
-        //draw stations
+        //draw bikeshare station points
         vis.stations = vis.svg.select(".stations")
             .append("g")
             .selectAll(".station")
@@ -296,7 +296,7 @@ class MapVis {
             .select("h1")
             .text(selectedNeighborhood);
 
-        //display color codes
+        //display legend dots
         vis.incomingBikeDot
             .append("circle")
             .attr("r", vis.radius)
