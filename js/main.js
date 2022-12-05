@@ -9,32 +9,7 @@ let myMapVis;
 let myRadarChart;
 let mySankeyVisOne;
 let mySankeyVisTwo;
-
-let radarData = [
-    [//Census Tract 70
-        {axis:"Drive Alone",value:0.28},
-        {axis:"Public Transit",value:0.24},
-        {axis:"Walked",value:0.25},
-        {axis:"Bicycle",value:0.07},
-        {axis:"Taxicab",value:0.01},
-        {axis:"Worked from Home",value:0.14},
-    ],[//Census Tract 1
-        {axis:"Drive Alone",value:0.40},
-        {axis:"Public Transit",value:0.13},
-        {axis:"Walked",value:0.21},
-        {axis:"Bicycle",value:0.08},
-        {axis:"Taxicab",value:0.04},
-        {axis:"Worked from Home",value:0.15},
-    ],[//Census Tract
-        {axis:"Drive Alone",value:0.22},
-        {axis:"Public Transit",value:0.26},
-        {axis:"Walked",value:0.29},
-        {axis:"Bicycle",value:0.10},
-        {axis:"Taxicab",value:0.02},
-        {axis:"Worked from Home",value:0.11},
-    ]
-];
-
+let mapboxToken = config.MapboxToken;
 
 // load data using promises
 let promises = [
@@ -48,9 +23,6 @@ let promises = [
     d3.json("data/TaxiTripsEnded_by_Neighborhood.geojson"), // bike trips ended at [5]
     d3.json("data/TaxiTripsStarted_by_Neighborhood.geojson"), // bike trips started at [6]
     d3.json("data/CommuteShare_by_Neighborhood.json"), // commute share started at [7]
-    //radarData will not be picked up, testing CommuteShare instead - Alex
-    radarData //radarData started at [8]
-
 ];
 
 Promise.all(promises)
@@ -82,7 +54,7 @@ function initMainPage(dataArray){
 
 
     myStreetVis = new StreetVis("street-vis", dataArray[0], d3.geoMercator());
-    myMapVis = new MapVis("map-vis", dataArray[1], dataArray[2], dataArray[3], dataArray[4], dataArray[5], dataArray[6], config.MapboxToken, eventHandler)
+    myMapVis = new MapVis("map-vis", dataArray[1], dataArray[2], dataArray[3], dataArray[4], dataArray[5], dataArray[6], mapboxToken, eventHandler)
     //Call function to draw the Radar chart
     myRadarChart = new RadarChart("radar-chart", dataArray[8], dataArray[7]);
     mySankeyVisTwo = new SankeyVis2("sankey-vis2",dataArray[5],dataArray[6]);
