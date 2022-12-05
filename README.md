@@ -33,7 +33,7 @@ Mobility Data:
 
 Methods:
 
-Because millions of trips are generated each year, and this dashboard is intended as a scalable demonstration project, we used a subset of bike and taxi trips from the month of September 2021. Each trip was assigned a start neighborhood and end neighborhood based on the location of origin and destination points. For the summary statistics and sankey diagram, trips were grouped and counted based on these start and end neighborhoods. For the radar chart, commute mode share was pulled by census tract then mapped to neighborhoods using the cross-reference table above.  
+Because millions of trips are generated each year, and this dashboard is intended as a scalable demonstration project, we used a subset of 10,000 bike and taxi trips from the month of September 2021. Each trip was assigned a start neighborhood and end neighborhood based on the location of origin and destination points. For the summary statistics and sankey diagram, trips were grouped and counted based on these start and end neighborhoods. For the radar chart, commute mode share was pulled by census tract then mapped to neighborhoods using the cross-reference table above.  
 _____
 
 ### Libraries & Acknowledgements
