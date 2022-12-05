@@ -1,0 +1,130 @@
+---
+title: "Clipper"
+output: html_document
+date: '2022-11-15'
+---
+
+```{r packages}
+#install.packages("rmapshaper")
+#install.packages("tigris")
+#install.packages("sf")
+#install.packages("tmap")
+#install.packages("areal")
+#install.packages("leaflet")
+#install.packages("tidycensus")
+#install.packages("tmap")
+#install.packages("zonebuilder")
+#install.packages("ggspatial")
+#install.packages("tidyverse")
+install.packages("censusapi")
+
+
+```
+
+
+```{r libraries, echo=FALSE}
+#Note: not all of these packages were used, some are carryover.
+# library(tidyverse)
+# library(tidycensus)
+# library(sf)
+# library(tigris)
+# library(rmapshaper)
+# library(tmap)
+# library(areal)
+# library(leaflet)
+# library(geojsonsf)
+# library(zonebuilder)
+# library(ggspatial)
+# library(units)
+# library(ggspatial)
+#library(tidyr)
+#library(jsonlite)
+library(dplyr)
+
+```
+
+```{r read in census api}
+
+#A Census API key is needed to proceed, must request it from the Census site.
+#census_api_key("[DELETED]", install = TRUE, overwrite = TRUE)
+
+
+```
+
+```{r grabbing the communting percentages for DC census tracts}
+
+#Grabs the Means of Transportation variables from the 2019 ACS 5-yr Subject Tables
+com_percents <- getCensus(
+  name = "acs/acs5/subject",
+  vintage = 2019,
+  key = Sys.getenv("CENSUS_API_KEY"),
+
+#These are the variable names as defined by the Census API table.    
+#Car = S0801_C01_002E, transit = S0801_C01_009E, walked = S0801_C01_010E, biked = S0801_C01_011E, taxi = S0801_C01_012E, work from home = S0801_C01_013E
+
+#Specifying the variables
+  vars = c("NAME", "S0801_C01_002E", "S0801_C01_009E", "S0801_C01_010E", "S0801_C01_011E", "S0801_C01_012E", "S0801_C01_013E"),
+  region = "tract:*",
+  regionin = "state:11")
+
+#Prints the first few rows of the data table.
+head(com_percents)
+```
+
+```{r uniting and renaming}
+
+#Unites the three seperate columns that form the GEOID in the Census data table 
+com_percents2 <- 
+ unite(com_percents, col="GEOID", c("state", "county", "tract"), sep="")
+
+#Renames the variables to something more understandable.
+com_percents3 <- com_percents2 %>% 
+  rename(
+    "Drive Alone" = S0801_C01_002E,
+    "Public Transit" = S0801_C01_009E,
+    "Walked" = S0801_C01_010E,
+    "Bicycle" = S0801_C01_011E,
+    "Taxicab" = S0801_C01_012E,
+    "Worked from Home" = S0801_C01_013E
+    )
+
+#deleting the excess string information
+com_percents3$NAME <- stringr::str_replace(com_percents3$NAME, ", District of Columbia, District of Columbia", "")
+
+#dividing the percentage values by 100 to prepare for the radarChart's math operations
+com_percents4 <- com_percents3 %>% 
+  mutate_if(is.numeric, ~ . / 100)
+
+
+```
+
+```{r read in the neighborhood data}
+
+#read in the neighborhoods-to-tract table from Open Data DC - Based on Census  2019 data on Census 2010 tracts
+neigh_data = read.csv("pre_data/DC_Health_Planning_Neighborhoods_to_Census_Tracts.csv", as.is=T)
+
+#select only the two columns we are interested in
+neigh_data = neigh_data %>% select("GEOID", "DC_HPN_NAME")
+
+#convert the columns to the same primitive type to facilitate the table join
+neigh_data <- data.frame(lapply(neigh_data, as.character), stringsAsFactors=FALSE)
+
+#join tables with neighborhoods and their commuting shares 
+com_percents5 <- com_percents4 %>% inner_join(neigh_data,by="GEOID")
+
+com_percents5 %>% relocate("DC_HPN_NAME", .after = "NAME") -> com_percents5
+
+```
+
+```{r append the neighborhood data, echo=FALSE}
+
+# toJSON(setNames(as.data.frame(com_percents5[,c(3:9)]), c("Neighborhood","Car","Public Transit", "Walked","Bicycle","Taxicab","Worked from Home")))
+
+#converts the data into json file
+jsonData <- toJSON(com_percents5)
+
+```
+
+```{r write to geojson with neighborhood data included}
+write(jsonData, "final_data/CommuteShare_by_Neighborhood.json")
+```
