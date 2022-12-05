@@ -1,6 +1,6 @@
 # Mapping Mobility in Washington, DC
 This interactive dashboard visualizes mobility data in Washington, DC. This project was created as the final deliverable for [CS171 Visualization](https://www.cs171.org/2022/index.html). 
-For more information, watch a [video walkthrough](link here) of the dashboard or explore the [website](link here).
+For more information, watch a [video walkthrough](https://www.youtube.com/watch?v=PWBSnYnf4rA) of the dashboard or explore the [website](https://mpkhinda.github.io/CS171-FinalProject/).
 
 
 Project team:
