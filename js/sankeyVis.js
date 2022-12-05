@@ -16,7 +16,7 @@ class SankeyVis
         // set the dimensions and margins of the graph
         vis.margin = {top: 60, right: 1, bottom: 1, left: 1};
         vis.width = 400 + vis.margin.left + vis.margin.right;
-        vis.height = 600 + vis.margin.top + vis.margin.bottom;
+        vis.height = 450 + vis.margin.top + vis.margin.bottom;
 
         vis.padding= 20;
 
@@ -138,9 +138,8 @@ class SankeyVis
         });
         //console.log(vis.newdata);
         vis.newdata.sort((a,b) => (a.value < b.value) ? 1 : ((b.value < a.value) ? -1 : 0 ))
-        vis.newdata= vis.newdata.slice(0,10);
+        vis.newdata= vis.newdata.slice(0,5);
 
-        if (vis.newdata)
 
         // prepare data in form of nodes and links which are arrays of objects
         //set up graph

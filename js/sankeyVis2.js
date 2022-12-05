@@ -19,7 +19,7 @@ class SankeyVis2
         vis.margin = {top: 50, right: 1, bottom: 50, left: 1};
         //vis.width = document.getElementById(vis.parentElement).getBoundingClientRect().width + vis.margin.left + vis.margin.right-100;
         vis.width = 400 + vis.margin.left + vis.margin.right;
-        vis.height = 400 + vis.margin.top + vis.margin.bottom;
+        vis.height = 320 + vis.margin.top + vis.margin.bottom;
 
         vis.padding= 20;
 
@@ -124,7 +124,7 @@ class SankeyVis2
             }
         });
         vis.newdata.sort((a,b) => (a.value < b.value) ? 1 : ((b.value < a.value) ? -1 : 0 ))
-        vis.newdata= vis.newdata.slice(0,10);
+        vis.newdata= vis.newdata.slice(0,5);
 
 
         // prepare data in form of nodes and links which are arrays of objects
