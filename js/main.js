@@ -82,7 +82,7 @@ function initMainPage(dataArray){
 
 
     myStreetVis = new StreetVis("street-vis", dataArray[0], d3.geoMercator());
-    myMapVis = new MapVis("map-vis", dataArray[1], dataArray[2], dataArray[3], dataArray[4], dataArray[5], dataArray[6], MapboxToken, eventHandler)
+    myMapVis = new MapVis("map-vis", dataArray[1], dataArray[2], dataArray[3], dataArray[4], dataArray[5], dataArray[6], config.MapboxToken, eventHandler)
     //Call function to draw the Radar chart
     myRadarChart = new RadarChart("radar-chart", dataArray[8], dataArray[7]);
     mySankeyVisTwo = new SankeyVis2("sankey-vis2",dataArray[5],dataArray[6]);

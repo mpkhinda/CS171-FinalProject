@@ -52,7 +52,7 @@ body{
 .fit-image{
     width: 100%;
     object-fit: cover;
-    height: 500px; /* only if you want fixed height */
+    height: 350px; /* only if you want fixed height */
 }
 
 .scroll-text{
@@ -227,8 +227,8 @@ input:checked + .slider:before {
 
 /* Carousel */
 .btn-group button {
-    background-color: black; /* Green background */
-    border: 1px solid green; /* Green border */
+    background-color: black; /* black background */
+    border: 1px solid white; /* white border */
     color: white; /* White text */
     padding: 10px 24px; /* Some padding */
     cursor: pointer; /* Pointer/hand icon */
@@ -245,7 +245,7 @@ input:checked + .slider:before {
 }
 /* Add a background color on hover */
 .btn-group button:hover {
-    background-color: grey;
+    background-color: lightgrey;
 }
 #switchChart{
     transform: translateX(5px);
