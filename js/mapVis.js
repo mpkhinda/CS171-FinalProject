@@ -5,7 +5,7 @@
 class MapVis {
 
     // constructor
-    constructor(parentElement, neighborhoodData, bikeStationData, bikeEndData, bikeStartData, taxiEndData, taxiStartData, token, eventHandler) {
+    constructor(parentElement, neighborhoodData, bikeStationData, bikeEndData, bikeStartData, taxiEndData, taxiStartData, eventHandler) {
         this.parentElement = parentElement;
         this.neighborhoodData = neighborhoodData;
         this.bikeStationData = bikeStationData;
@@ -14,7 +14,6 @@ class MapVis {
         this.taxiStartData = taxiStartData;
         this.taxiEndData = taxiEndData;
         this.eventHandler = eventHandler;
-        this.token = token;
 
         this.dateFormatter = d3.timeFormat("%B %d, %Y");
         this.bikeDateParser = d3.timeParse("%Y-%m-%d");
@@ -28,7 +27,7 @@ class MapVis {
         let vis = this;
 
         // connect access token
-        mapboxgl.accessToken = vis.token;
+        mapboxgl.accessToken = "pk.eyJ1IjoibXBraGluZGEiLCJhIjoiY2tiZjVyd2lnMHNnZzJ3bXJ3bnM1bmU1OCJ9.zbK8g-geydNpykTl4yPIsQ";
 
         // create new mapbox map
         vis.map = new mapboxgl.Map({

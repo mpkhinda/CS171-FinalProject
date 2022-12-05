@@ -9,7 +9,6 @@ let myMapVis;
 let myRadarChart;
 let mySankeyVisOne;
 let mySankeyVisTwo;
-let mapboxToken = "pk.eyJ1IjoibXBraGluZGEiLCJhIjoiY2tiZjVyd2lnMHNnZzJ3bXJ3bnM1bmU1OCJ9.zbK8g-geydNpykTl4yPIsQ";
 
 // load data using promises
 let promises = [
