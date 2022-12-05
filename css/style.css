@@ -52,7 +52,7 @@ body{
 .fit-image{
     width: 100%;
     object-fit: cover;
-    height: 300px; /* only if you want fixed height */
+    height: 500px; /* only if you want fixed height */
 }
 
 .scroll-text{
@@ -208,10 +208,13 @@ input:checked + .slider:before {
 .slider.round:before {
     border-radius: 50%;
 }
+
+
+/* The sankey */
 .link{
     fill: none;
     stroke: white;
-    stroke-width: 10px;
+    stroke-opacity: .5;
 }
 .title{
     font-size: 5px;
@@ -220,4 +223,30 @@ input:checked + .slider:before {
     text-shadow: 1px 1px 2px #454545;
     position: absolute;
     text-align: left;
+}
+
+/* Carousel */
+.btn-group button {
+    background-color: black; /* Green background */
+    border: 1px solid green; /* Green border */
+    color: white; /* White text */
+    padding: 10px 24px; /* Some padding */
+    cursor: pointer; /* Pointer/hand icon */
+    float: left; /* Float the buttons side by side */
+}
+.btn-group button:not(:last-child) {
+    border-right: none; /* Prevent double borders */
+}
+/* Clear floats (clearfix hack) */
+.btn-group:after {
+    content: "";
+    clear: both;
+    display: table;
+}
+/* Add a background color on hover */
+.btn-group button:hover {
+    background-color: grey;
+}
+#switchChart{
+    transform: translateX(5px);
 }

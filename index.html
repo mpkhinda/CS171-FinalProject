@@ -96,6 +96,7 @@
     <!--main map section-->
     <div class = "row slide slide-3">
         <div class = "col-12" id = "map-vis"></div>
+
         <div id = "detail-panel" >
             <h1>Neighborhood Name</h1>
             <p>Trips from <span id="date-range-start">00-00-0000</span> to <span id="date-range-end">00-00-0000</span></p>
@@ -155,23 +156,49 @@
             </div>
 
             <hr class ="divider">
-            <p class = "section-title">Commuting Pattern</p>
-            <div id="radar-chart"></div>
-            <div id="census-tract-names">
-                <p>Census Tract Name</p>
+
+            <!--additional visualization section-->
+            <div class="chartContainer">
+
+                <div class="btn-group justify-content-center">
+                    <button id="switchChart" class="btn btn-light align-self-center" type="button" data-target="#carousel-item" data-slide-to="0" onclick="switchView()" >Switch Commuting Pattern / Directional Flow</button> <!--style="width:50%"-->
+                    <!--  <button id="switchChart" class="btn btn-light align-self-center" type="button" data-target="#carousel-item" data-slide-to="1" onclick="switchView()" >Directional Flow</button>-->
+                  </div>
+
+                          <div id="stateCarousel" class="carousel slide" data-ride="carousel" style=" width: 100%; height: 50vh">
+                              <div class="carousel-inner" style="height: 50vh">
+
+                                  <!-- Radar Chart -->
+                                <div class="carousel-item active">
+                                    <p class = "section-title">Commuting Pattern</p>
+                                    <div class="col">
+                                        <div class="row" style="height: 50vh; padding: 1vh">
+                                            <div id="radar-chart"></div>
+                                            <div id="census-tract-names">
+                                                <p>Census Tract Name</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- sankey -->
+                                <div class="carousel-item">
+                                    <div class="col">
+                                        <div class="row no-gutters" style="height: 60vh; padding: 1vh" >
+                                            <div id="sankey-vis" ></div>
+                                            <div id="sankey-vis2"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
             </div>
         </div>
-    </div>
 
-    <!--additional visualization section-->
-    <div class = "row slide slide-4">
-        <div class = "col-6" id="sankey-vis">
-            <!--add divs here with unique ID for d3 visualization(s)-->
-        </div>
-        <div class = "col-6" id="sankey-vis2">
-        </div>
-    </div>
 
+    </div>
 </div>
 
 

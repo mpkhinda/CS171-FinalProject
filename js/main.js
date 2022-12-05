@@ -51,9 +51,6 @@ let promises = [
     //radarData will not be picked up, testing CommuteShare instead - Alex
     radarData //radarData started at [8]
 
-
-
-
 ];
 
 Promise.all(promises)
@@ -64,7 +61,7 @@ Promise.all(promises)
         console.log(err)
     });
 
-//create event handler
+//create event handler -- map
 let eventHandler = {
     bind: (eventName, handler) => {
         document.body.addEventListener(eventName, handler);
@@ -76,6 +73,9 @@ let eventHandler = {
     }
 }
 
+//create event handler -- panel layout
+
+
 // init main page
 function initMainPage(dataArray){
     console.log(dataArray); // explore dataArray in console
@@ -85,8 +85,8 @@ function initMainPage(dataArray){
     myMapVis = new MapVis("map-vis", dataArray[1], dataArray[2], dataArray[3], dataArray[4], dataArray[5], dataArray[6], MapboxToken, eventHandler)
     //Call function to draw the Radar chart
     myRadarChart = new RadarChart("radar-chart", dataArray[8], dataArray[7]);
-    mySankeyVisOne = new SankeyVis("sankey-vis",dataArray[3],dataArray[4]);
     mySankeyVisTwo = new SankeyVis2("sankey-vis2",dataArray[5],dataArray[6]);
+    mySankeyVisOne = new SankeyVis("sankey-vis",dataArray[3],dataArray[4]);
     //use dataArray indexing to pass specific datasets from the promise to the visualization classes
 
 }
@@ -99,11 +99,19 @@ eventHandler.bind("selectionChanged", function(event){
     myMapVis.wrangleData();
     myRadarChart.wrangleData();
     //update sankeys
-    mySankeyVisOne.wrangleData();
     mySankeyVisTwo.wrangleData();
+    mySankeyVisOne.wrangleData();
+
 
 });
 
 function updateMap(){
     myMapVis.wrangleData();
+}
+
+// Create bootstrap carousel, disabling rotating
+let carousel = new bootstrap.Carousel(document.getElementById('stateCarousel'), {interval: false})
+// on button click switch view
+function switchView() {
+    carousel.next();
 }
