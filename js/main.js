@@ -9,7 +9,7 @@ let myMapVis;
 let myRadarChart;
 let mySankeyVisOne;
 let mySankeyVisTwo;
-let mapboxToken = config.MapboxToken;
+let mapboxToken = process.env.MAPBOXTOKEN;
 
 // load data using promises
 let promises = [
